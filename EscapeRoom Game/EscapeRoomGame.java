@@ -1,7 +1,7 @@
 import escapeModel.EscapeGame;
+import views.EscapeRoomGameView;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import views.EscapeRoomView;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 public class EscapeGameApp extends Application {
 
     EscapeGame model;
-    EscapeGameView view;
+    EscapeRoomGameView view;
 
     public static void main(String[] args) {
         launch(args);
@@ -24,8 +24,8 @@ public class EscapeGameApp extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
-        this.model = new AdventureGame("TinyGame"); //change the name of the game if you want to try something bigger!
-        this.view = new AdventureGameView(model, primaryStage);
+        this.model = new EscapeGame("TinyGame"); //change the name of the game if you want to try something bigger!
+        this.view = new EscapeRoomGameView(model, primaryStage);
     }
 
 }
