@@ -2,12 +2,8 @@ package views;
 
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
-import AdventureModel.Passage;
-import AdventureModel.PassageTable;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -32,7 +28,6 @@ import javafx.scene.AccessibleRole;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Class AdventureGameView.
@@ -44,7 +39,7 @@ import java.util.Objects;
  * ZOOM LINK: https://drive.google.com/file/d/1BUlyAP659uqM48ZI7W0L4_MaM5SMfY4M/view?usp=sharing
  * PASSWORD: N/A
  */
-public class AdventureGameView {
+public class EscapeRoomGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
@@ -68,7 +63,7 @@ public class AdventureGameView {
      * @param model: The model of the adventure game.
      * @param stage: The stage of the adventure game.
      */
-    public AdventureGameView(AdventureGame model, Stage stage) {
+    public EscapeRoomGameView(AdventureGame model, Stage stage) {
         this.model = model;
         this.stage = stage;
         intiUI();

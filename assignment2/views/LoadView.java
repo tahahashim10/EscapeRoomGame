@@ -23,7 +23,7 @@ import java.io.*;
  */
 public class LoadView {
 
-    private AdventureGameView adventureGameView;
+    private EscapeRoomGameView escapeRoomGameView;
     private Label selectGameLabel;
     private Button selectGameButton;
     private Button closeWindowButton;
@@ -34,19 +34,19 @@ public class LoadView {
     /**
      * Constructs a user interface for selecting and loading game files.
      *
-     * @param adventureGameView: The main AdventureGameView object.
+     * @param escapeRoomGameView: The main AdventureGameView object.
      */
-    public LoadView(AdventureGameView adventureGameView){
+    public LoadView(EscapeRoomGameView escapeRoomGameView){
         //test comment
         //note that the buttons in this view are not accessible!!
-        this.adventureGameView = adventureGameView;
+        this.escapeRoomGameView = escapeRoomGameView;
         selectGameLabel = new Label(String.format(""));
 
         GameList = new ListView<>(); //to hold all the file names
 
         final Stage dialog = new Stage(); //dialogue box
         dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.initOwner(adventureGameView.stage);
+        dialog.initOwner(escapeRoomGameView.stage);
 
         VBox dialogVbox = new VBox(20);
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
@@ -57,7 +57,7 @@ public class LoadView {
         getFiles(GameList); //get files for file selector
         selectGameButton = new Button("Change Game");
         selectGameButton.setId("ChangeGame"); // DO NOT MODIFY ID
-        AdventureGameView.makeButtonAccessible(selectGameButton, "select game", "This is the button to select a game", "Use this button to indicate a game file you would like to load.");
+        EscapeRoomGameView.makeButtonAccessible(selectGameButton, "select game", "This is the button to select a game", "Use this button to indicate a game file you would like to load.");
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
@@ -65,7 +65,7 @@ public class LoadView {
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
-        AdventureGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the load game window", "Use this button to close the load game window.");
+        EscapeRoomGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the load game window", "Use this button to close the load game window.");
 
         //on selection, do something
         selectGameButton.setOnAction(e -> {
@@ -132,9 +132,9 @@ public class LoadView {
             //load the game
             AdventureGame loadedGame =  loadGame("Games/Saved/" + selectedGame);
             //stop any articulation
-            adventureGameView.stopArticulation();
+            escapeRoomGameView.stopArticulation();
             //create a new adventure game object given the loaded game
-            adventureGameView = new AdventureGameView(loadedGame, adventureGameView.stage);
+            escapeRoomGameView = new EscapeRoomGameView(loadedGame, escapeRoomGameView.stage);
             //put the name of the loaded file in the selectGameLabel
             selectGameLabel.setText(selectedGame);
 
@@ -142,11 +142,11 @@ public class LoadView {
             //If unsuccessful, stop any articulation and start an entirely new game from scratch.
             //In this case, change the selectGameLabel to indicate a new game has been loaded.
             //stop any articulation
-            adventureGameView.stopArticulation();
+            escapeRoomGameView.stopArticulation();
             //create a new adventure game object given the current directory name after "Games"
-            AdventureGame newGame = new AdventureGame(adventureGameView.model.getDirectoryName().substring(5));
+            AdventureGame newGame = new AdventureGame(escapeRoomGameView.model.getDirectoryName().substring(5));
             //re-initialize the adventureGameView
-            adventureGameView = new AdventureGameView(newGame, adventureGameView.stage);
+            escapeRoomGameView = new EscapeRoomGameView(newGame, escapeRoomGameView.stage);
             //indicate a new game has been loaded
             selectGameLabel.setText("New game has been loaded.");
         }

@@ -31,18 +31,18 @@ public class SaveView {
     private Button saveGameButton = new Button("Save Game");
     private Button closeWindowButton = new Button("Close Window");
 
-    private AdventureGameView adventureGameView;
+    private EscapeRoomGameView escapeRoomGameView;
 
     /**
      * Constructor
      *
-     * @param adventureGameView: The main AdventureGameView object.
+     * @param escapeRoomGameView: The main AdventureGameView object.
      */
-    public SaveView(AdventureGameView adventureGameView) {
-        this.adventureGameView = adventureGameView;
+    public SaveView(EscapeRoomGameView escapeRoomGameView) {
+        this.escapeRoomGameView = escapeRoomGameView;
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.initOwner(adventureGameView.stage);
+        dialog.initOwner(escapeRoomGameView.stage);
         VBox dialogVbox = new VBox(20);
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
         dialogVbox.setStyle("-fx-background-color: #121212;");
@@ -64,7 +64,7 @@ public class SaveView {
         saveGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
         saveGameButton.setPrefSize(200, 50);
         saveGameButton.setFont(new Font(16));
-        AdventureGameView.makeButtonAccessible(saveGameButton, "save game", "This is a button to save the game", "Use this button to save the current game.");
+        EscapeRoomGameView.makeButtonAccessible(saveGameButton, "save game", "This is a button to save the game", "Use this button to save the current game.");
         saveGameButton.setOnAction(e -> saveGame());
 
         closeWindowButton = new Button("Close Window");
@@ -73,7 +73,7 @@ public class SaveView {
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
-        AdventureGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the save game window", "Use this button to close the save game window.");
+        EscapeRoomGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the save game window", "Use this button to close the save game window.");
 
         VBox saveGameBox = new VBox(10, saveGameLabel, saveFileNameTextField, saveGameButton, saveFileErrorLabel, closeWindowButton);
         saveGameBox.setAlignment(Pos.CENTER);
@@ -116,7 +116,7 @@ public class SaveView {
             }
         }
 
-        adventureGameView.model.saveModel(new File("Games/Saved/" + fileName));
+        escapeRoomGameView.model.saveModel(new File("Games/Saved/" + fileName));
         saveFileErrorLabel.setText(saveFileSuccess);
 
 
