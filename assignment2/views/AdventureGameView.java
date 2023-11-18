@@ -172,7 +172,7 @@ public class AdventureGameView {
 
         // adding the text area and submit button to a VBox
         VBox textEntry = new VBox();
-        textEntry.setStyle("-fx-background-color: #000000;");
+        textEntry.setStyle("-fx-background-color: #96AEAD;");
         textEntry.setPadding(new Insets(20, 20, 20, 20));
         textEntry.getChildren().addAll(commandLabel, inputTextField);
         textEntry.setSpacing(10);
@@ -289,10 +289,10 @@ public class AdventureGameView {
             inputTextField.setDisable(false);
         }
 
-        if (output == null || (!output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
+        if (output == null || (!output.equals("YOU HAVE EXITED THE ESCAPE ROOM GAME") && !output.equals("FORCED") && !output.equals("HELP"))) {
             updateScene(output);
             updateItems();
-        } else if (output.equals("GAME OVER")) {
+        } else if (output.equals("YOU HAVE EXITED THE ESCAPE ROOM GAME")) {
             inputTextField.setDisable(true);
             updateScene("");
             updateItems();
@@ -358,7 +358,7 @@ public class AdventureGameView {
         VBox roomPane = new VBox(roomImageView,roomDescLabel);
         roomPane.setPadding(new Insets(10));
         roomPane.setAlignment(Pos.TOP_CENTER);
-        roomPane.setStyle("-fx-background-color: #000000;");
+        roomPane.setStyle("-fx-background-color: #96AEAD;");
 
         gridPane.add(roomPane, 1, 1);
         stage.sizeToScene();
@@ -566,13 +566,13 @@ public class AdventureGameView {
 
         ScrollPane scO = new ScrollPane(objectsInRoom);
         scO.setPadding(new Insets(10));
-        scO.setStyle("-fx-background: #000000; -fx-background-color:transparent;");
+        scO.setStyle("-fx-background: #96AEAD; -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
 
         ScrollPane scI = new ScrollPane(objectsInInventory);
         scI.setFitToWidth(true);
-        scI.setStyle("-fx-background: #000000; -fx-background-color:transparent;");
+        scI.setStyle("-fx-background: #96AEAD; -fx-background-color:transparent;");
         gridPane.add(scI,2,1);
     }
 
@@ -616,7 +616,7 @@ public class AdventureGameView {
 
             //ScrollPane citation: https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
             ScrollPane sc = new ScrollPane(label);
-            sc.setStyle("-fx-background: #000000; -fx-background-color:transparent;"); //transparent background
+            sc.setStyle("-fx-background: #96AEAD; -fx-background-color:transparent;"); //transparent background
             sc.setFitToWidth(true);
 
             //display the help text in the CENTRE of the gridPane (i.e. within cell 1,1)
@@ -649,7 +649,7 @@ public class AdventureGameView {
             VBox roomPane = new VBox(roomImageView,roomDescLabel);
             roomPane.setPadding(new Insets(10));
             roomPane.setAlignment(Pos.TOP_CENTER);
-            roomPane.setStyle("-fx-background-color: #000000;");
+            roomPane.setStyle("-fx-background-color: #96AEAD;");
             gridPane.add(roomPane, 1, 1);
             stage.sizeToScene();
             articulateRoomDescription();
