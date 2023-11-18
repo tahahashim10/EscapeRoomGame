@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class SaveView {
 
-    static String saveFileSuccess = "Saved EscapeRoom Game!!";
+    static String saveFileSuccess = "Saved Adventure Game!!";
     static String saveFileExistsError = "Error: File already exists";
     static String saveFileNotSerError = "Error: File must end with .ser";
     private Label saveFileErrorLabel = new Label("");
@@ -30,7 +30,6 @@ public class SaveView {
     private TextField saveFileNameTextField = new TextField("");
     private Button saveGameButton = new Button("Save Game");
     private Button closeWindowButton = new Button("Close Window");
-
 
     private AdventureGameView adventureGameView;
 
@@ -46,11 +45,11 @@ public class SaveView {
         dialog.initOwner(adventureGameView.stage);
         VBox dialogVbox = new VBox(20);
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
-        dialogVbox.setStyle("-fx-background-color: #544072;");
+        dialogVbox.setStyle("-fx-background-color: #121212;");
         saveGameLabel.setId("SaveGame"); // DO NOT MODIFY ID
         saveFileErrorLabel.setId("SaveFileErrorLabel");
         saveFileNameTextField.setId("SaveFileNameTextField");
-        saveGameLabel.setStyle("-fx-text-fill: #e8e6e3; -fx-font-family: 'DejaVu Sans';");
+        saveGameLabel.setStyle("-fx-text-fill: #e8e6e3;");
         saveGameLabel.setFont(new Font(16));
         saveFileErrorLabel.setStyle("-fx-text-fill: #e8e6e3;");
         saveFileErrorLabel.setFont(new Font(16));
@@ -62,7 +61,7 @@ public class SaveView {
 
         saveGameButton = new Button("Save board");
         saveGameButton.setId("SaveBoardButton"); // DO NOT MODIFY ID
-        saveGameButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
+        saveGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
         saveGameButton.setPrefSize(200, 50);
         saveGameButton.setFont(new Font(16));
         AdventureGameView.makeButtonAccessible(saveGameButton, "save game", "This is a button to save the game", "Use this button to save the current game.");
@@ -70,7 +69,7 @@ public class SaveView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
+        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
