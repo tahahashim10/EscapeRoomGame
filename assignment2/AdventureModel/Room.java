@@ -86,7 +86,6 @@ public class Room implements Serializable {
      * @return delimited string of possible moves
      */
     public String getCommands() {
-
         StringBuilder delimited = new StringBuilder();
         List<Passage> passages = getMotionTable().getDirection();
         for (int i = 0; i < passages.size(); i++){
