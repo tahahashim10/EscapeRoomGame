@@ -50,7 +50,7 @@ public class LoadView {
 
         VBox dialogVbox = new VBox(20);
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
-        dialogVbox.setStyle("-fx-background-color: #121212;");
+        dialogVbox.setStyle("-fx-background-color: #544072;");
         selectGameLabel.setId("CurrentGame"); // DO NOT MODIFY ID
         GameList.setId("GameList");  // DO NOT MODIFY ID
         GameList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -61,7 +61,7 @@ public class LoadView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        closeWindowButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
@@ -80,9 +80,10 @@ public class LoadView {
 
         // Default styles which can be modified
         GameList.setPrefHeight(100);
+        GameList.setStyle("-fx-text-fill: #CBC3E3");
         selectGameLabel.setStyle("-fx-text-fill: #e8e6e3");
         selectGameLabel.setFont(new Font(16));
-        selectGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        selectGameButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         selectGameButton.setPrefSize(200, 50);
         selectGameButton.setFont(new Font(16));
         selectGameBox.setAlignment(Pos.CENTER);
@@ -176,3 +177,8 @@ public class LoadView {
     }
 
 }
+
+
+
+
+
