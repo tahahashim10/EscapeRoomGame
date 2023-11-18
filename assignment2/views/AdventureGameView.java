@@ -2,12 +2,8 @@ package views;
 
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
-import AdventureModel.Passage;
-import AdventureModel.PassageTable;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -32,7 +28,6 @@ import javafx.scene.AccessibleRole;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Class AdventureGameView.
@@ -80,7 +75,7 @@ public class AdventureGameView {
     public void intiUI() {
 
         // setting up the stage
-        this.stage.setTitle("hashimt1's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
+        this.stage.setTitle("Escape Room Game");
 
         //Inventory + Room items
         objectsInInventory.setSpacing(10);
@@ -238,16 +233,16 @@ public class AdventureGameView {
      * graph by invoking requestFocus method.
      */
     private void addTextHandlingEvent() {
-        //test comment
-        //add your code here!
-        //EventHandler citation: https://docs.oracle.com/javase/8/docs/api/java/beans/EventHandler.html
         EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent e) {
+                // If the user hits the TAB key, move the focus onto any object/clue in that specific room. (*)
                 if(e.getCode() == KeyCode.TAB){ //if the user hits the TAB key, invoke the requestFocus method
                     gridPane.requestFocus();
-                } else if (e.getCode() == KeyCode.ENTER) { //if the user hits the enter key, strip white space from
-                    //inputTextField and process event
+                }
+                // Enter a command and hit ENTER to continue. Will allow the user to navigate/go to other rooms.
+                else if (e.getCode() == KeyCode.ENTER) {
+                    //if the user hits the enter key, strip white space from
                     submitEvent(inputTextField.getText().strip());
                     //clear the text field
                     inputTextField.setText("");
@@ -422,7 +417,7 @@ public class AdventureGameView {
      * Each node represents a different object.
      *
      * Images of each object are in the assets
-     * folders of the given adventure game.
+     * folders of the given Escape game.
      */
     public void updateItems() {
 
