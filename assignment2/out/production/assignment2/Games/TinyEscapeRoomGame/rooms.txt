@@ -8,13 +8,13 @@ WEST       2
 Prison Room
 You are in a sparsely furnished prison room, its cold, concrete walls and narrow barred window underscoring its stark confinement, houses a simple bed, a small desk, and a metal toilet, creating an environment that reflects the restrictive nature of incarceration.
 -----
-EAST       1
+EAST       3
 
 3
 Future Room
 A futuristic room, characterized by seamless integration of smart technology, holographic displays, and sustainable design, features responsive ambient lighting, self-adjusting climate control, and interactive surfaces, creating an immersive and efficient living or working space in harmony with cutting-edge advancements.
 -----
-SOUTH      1
+SOUTH      4
 WEST       5
 OUT        6/BIRD
 OUT        1
