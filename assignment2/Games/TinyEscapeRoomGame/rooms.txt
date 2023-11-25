@@ -1,0 +1,77 @@
+1
+Crime Room
+You are a meticulously secured and well-lit crime room equipped with advanced forensic tools and evidence storage facilities serves as the controlled environment where investigators meticulously collect, analyze, and document crucial evidence in the pursuit of solving criminal cases.
+-----
+WEST       2
+
+2
+Prison Room
+You are in a sparsely furnished prison room, its cold, concrete walls and narrow barred window underscoring its stark confinement, houses a simple bed, a small desk, and a metal toilet, creating an environment that reflects the restrictive nature of incarceration.
+-----
+EAST       3
+
+3
+Future Room
+A futuristic room, characterized by seamless integration of smart technology, holographic displays, and sustainable design, features responsive ambient lighting, self-adjusting climate control, and interactive surfaces, creating an immersive and efficient living or working space in harmony with cutting-edge advancements.
+-----
+SOUTH      4
+WEST       5
+OUT        6/BIRD
+OUT        1
+NORTH     3
+XYZZY     2/BOOK
+XYZZY     1
+PLUGH     2/BOOK
+PLUGH     1
+
+4
+Zombie Room
+You are in a chilling Zombie Room, bathed in dim, flickering light and echoing with ominous groans, immerses participants in a post-apocalyptic setting adorned with blood-stained walls, scattered debris, and eerily realistic zombie props, creating an adrenaline-fueled escape experience.
+-----
+NORTH      1
+UP         1
+SOUTH      5
+DOWN       5
+WEST       5
+
+5
+Slit in rock
+At your feet all the water of the stream splashes into a two-inch slit in the rock.  To the south, the streambed is bare rock.
+-----
+NORTH      4
+UP         4
+SOUTH      6
+DOWN       6
+WEST       6
+
+6
+Curtain1
+You are passing through a curtain!
+-----
+FORCED    7/BIRD
+FORCED    9
+
+7
+Curtain2
+You are passing through another curtain!
+-----
+FORCED    8
+
+8
+Curtain3
+Yet another curtain here!
+-----
+FORCED    10
+
+9
+Missing Treasures
+You can pass through this curtain only if you're carrying all the treasures.  You don't yet have all of them.
+-----
+FORCED     3
+
+10
+Victory
+You have collected all the treasures and are admitted to the Adventurer's Hall of Fame.  Congratulations!
+-----
+FORCED     0
+
