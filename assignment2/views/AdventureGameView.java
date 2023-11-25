@@ -29,19 +29,16 @@ import javafx.util.Duration;
 import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
-<<<<<<< HEAD
-//TODO: Phase 2
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
-=======
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+//TODO: Taha Phase 2 Timer User Story
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
  * Class AdventureGameView.
@@ -70,13 +67,11 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
-<<<<<<< HEAD
     //TODO: Phase 2 Taha Timer User Story
     private int timerSeconds = 10;
     Label timerLabel = new Label();
 
-=======
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
+
     /**
      * Adventure Game View Constructor
      * __________________________
@@ -89,8 +84,6 @@ public class AdventureGameView {
         this.stage = stage;
         intiUI();
     }
-
-<<<<<<< HEAD
     //TODO: Phase 2 Taha Timer User Story
     private Timeline timer = new Timeline(
             new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
@@ -132,8 +125,6 @@ public class AdventureGameView {
         timer.play();
     }
 
-=======
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
     /**
      * Initialize the UI
      */
@@ -239,7 +230,6 @@ public class AdventureGameView {
         textEntry.setAlignment(Pos.CENTER);
         gridPane.add( textEntry, 0, 2, 3, 1 );
 
-<<<<<<< HEAD
         //TODO: Phase 2 Taha Timer User Story
         VBox vBox = new VBox();
         vBox.setSpacing(10);
@@ -250,9 +240,6 @@ public class AdventureGameView {
         timerLabel.setStyle("-fx-text-fill: red;");
         timerLabel.setFont(new Font("Arial", 16));
 
-
-=======
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
         // Render everything
         var scene = new Scene( gridPane ,  1000, 800);
         scene.setFill(Color.BLACK);
@@ -260,12 +247,9 @@ public class AdventureGameView {
         this.stage.setResizable(false);
         this.stage.show();
 
-<<<<<<< HEAD
         //TODO: Phase 2 Taha Timer User Story
         startTimer();
 
-=======
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
     }
 
 
@@ -353,11 +337,7 @@ public class AdventureGameView {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-<<<<<<< HEAD
-            articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
-=======
-           // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
+            // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
             showInstructions();
@@ -448,14 +428,10 @@ public class AdventureGameView {
         stage.sizeToScene();
 
         //finally, articulate the description
-<<<<<<< HEAD
-        if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
-=======
         /*
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
 
          */
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
     }
 
     /**
@@ -488,11 +464,7 @@ public class AdventureGameView {
     private void getRoomImage() {
 
         int roomNumber = this.model.getPlayer().getCurrentRoom().getRoomNumber();
-<<<<<<< HEAD
-        String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".png";
-=======
         String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".jpg";
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
 
         Image roomImageFile = new Image(roomImage);
         roomImageView = new ImageView(roomImageFile);
@@ -747,11 +719,7 @@ public class AdventureGameView {
             roomPane.setStyle("-fx-background-color: #000000;");
             gridPane.add(roomPane, 1, 1);
             stage.sizeToScene();
-<<<<<<< HEAD
-            articulateRoomDescription();
-=======
             //articulateRoomDescription();
->>>>>>> 2f2990b19aeb379e93cbf6a9d5fe1206c2b90b79
 
             //set the helpToggle to FALSE
             helpToggle = false;
