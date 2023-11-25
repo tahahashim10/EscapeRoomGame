@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+<<<<<<<< HEAD:EscapeRoom/.idea/modules.xml
+      <module fileurl="file://$PROJECT_DIR$/EscapeRoom.iml" filepath="$PROJECT_DIR$/EscapeRoom.iml" />
+========
+      <module fileurl="file://$PROJECT_DIR$/.idea/group_42.iml" filepath="$PROJECT_DIR$/.idea/group_42.iml" />
+>>>>>>>> 57f1fa7734b1671df1c77a318ffc7e3bcaf0b74e:.idea/modules.xml
+    </modules>
+  </component>
+</project>
