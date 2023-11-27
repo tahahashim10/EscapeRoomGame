@@ -34,6 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//TODO: Taha Phase 2 Timer User Story
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
 /**
  * Class AdventureGameView.
  *
@@ -61,6 +67,11 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
+    //TODO: Phase 2 Taha Timer User Story
+    private int timerSeconds = 90;
+    Label timerLabel = new Label();
+
+
     /**
      * Adventure Game View Constructor
      * __________________________
@@ -72,6 +83,46 @@ public class AdventureGameView {
         this.model = model;
         this.stage = stage;
         intiUI();
+    }
+    //TODO: Phase 2 Taha Timer User Story
+    private Timeline timer = new Timeline(
+            new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    updateTimer();
+                }
+            })
+    );
+    //TODO: Phase 2 Taha Timer User Story
+    private void updateTimer(){
+        int minutes = timerSeconds / 60;
+        int seconds = timerSeconds % 60;
+        timerLabel.setText("Time Remaining: " + String.format("%02d:%02d", minutes, seconds));
+
+        timerSeconds--;
+
+        if (timerSeconds < 0) {
+            timer.stop();
+            Label gameOverLabel = new Label("Game Over");
+            VBox vBox = new VBox();
+            vBox.setSpacing(10);
+            vBox.setAlignment(Pos.CENTER);
+            vBox.setPadding(new Insets(-20, 0, 0, 0));
+            vBox.getChildren().add(gameOverLabel);
+            gridPane.add(vBox, 1, 1, 1, 1);
+            gameOverLabel.setStyle("-fx-text-fill: red; -fx-font-size: 115; -fx-rotate: 15;");
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+                Platform.exit();
+            });
+            pause.play();
+
+        }
+    }
+    //TODO: Phase 2 Taha Timer User Story
+    private void startTimer() {
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
     }
 
     /**
@@ -179,12 +230,25 @@ public class AdventureGameView {
         textEntry.setAlignment(Pos.CENTER);
         gridPane.add( textEntry, 0, 2, 3, 1 );
 
+        //TODO: Phase 2 Taha Timer User Story
+        VBox vBox = new VBox();
+        vBox.setSpacing(10);
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.setPadding(new Insets(-20, 0, 0, 0));
+        vBox.getChildren().add(timerLabel);
+        gridPane.add(vBox, 1, 0, 1, 1);
+        timerLabel.setStyle("-fx-text-fill: red;");
+        timerLabel.setFont(new Font("Arial", 16));
+
         // Render everything
         var scene = new Scene( gridPane ,  1000, 800);
         scene.setFill(Color.BLACK);
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
+
+        //TODO: Phase 2 Taha Timer User Story
+        startTimer();
 
     }
 
@@ -273,7 +337,7 @@ public class AdventureGameView {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-           // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
+            articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
             showInstructions();
@@ -364,10 +428,10 @@ public class AdventureGameView {
         stage.sizeToScene();
 
         //finally, articulate the description
-        /*
+
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
 
-         */
+
     }
 
     /**
@@ -655,7 +719,7 @@ public class AdventureGameView {
             roomPane.setStyle("-fx-background-color: #000000;");
             gridPane.add(roomPane, 1, 1);
             stage.sizeToScene();
-            //articulateRoomDescription();
+            articulateRoomDescription();
 
             //set the helpToggle to FALSE
             helpToggle = false;
@@ -727,3 +791,4 @@ public class AdventureGameView {
         }
     }
 }
+
