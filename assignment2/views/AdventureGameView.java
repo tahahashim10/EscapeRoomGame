@@ -68,7 +68,7 @@ public class AdventureGameView {
     private boolean mediaPlaying; //to know if the audio is playing
 
     //TODO: Phase 2 Taha Timer User Story
-    private int timerSeconds = 90;
+    private int timerSeconds = 1200;
     Label timerLabel = new Label();
 
 
