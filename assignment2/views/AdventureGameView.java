@@ -54,7 +54,7 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
-    Button saveButton, loadButton, helpButton; //buttons
+    Button saveButton, loadButton, helpButton, restartButton; //buttons
     Boolean helpToggle = false; //is help on display?
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
@@ -183,8 +183,16 @@ public class AdventureGameView {
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
+        restartButton = new Button("Restart");
+        restartButton.setId("Restart");
+        customizeButton(restartButton, 100, 50);
+        makeButtonAccessible(restartButton, "Restart Button", "This button restarts the game", "This button restarts the game. Click it to start the game from zero");
+        addRestartEvent();
+
+
+
         HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton);
+        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton);
         topButtons.setSpacing(10);
         topButtons.setAlignment(Pos.CENTER);
 
@@ -734,6 +742,13 @@ public class AdventureGameView {
         helpButton.setOnAction(e -> {
             stopArticulation(); //if speaking, stop
             showInstructions();
+        });
+    }
+
+    public void addRestartEvent() {
+        loadButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            this.model.restart();
         });
     }
 

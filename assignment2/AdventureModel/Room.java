@@ -35,6 +35,7 @@ public class Room implements Serializable {
      * The list of objects in the room.
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
+    public ArrayList<AdventureObject> allObjects = new ArrayList<AdventureObject>();
 
     /**
      * A boolean to store if the room has been visited or not
@@ -105,6 +106,7 @@ public class Room implements Serializable {
      */
     public void addGameObject(AdventureObject object){
         this.objectsInRoom.add(object);
+        this.allObjects.add(object);
     }
 
     /**
@@ -147,6 +149,12 @@ public class Room implements Serializable {
             if(this.objectsInRoom.get(i).getName().equals(objectName)) return this.objectsInRoom.get(i);
         }
         return null;
+    }
+
+    public void reset() {
+        // set the room as not visited and make sure it has all its objects
+        this.isVisited = false;
+        this.objectsInRoom = allObjects;
     }
 
     /**
