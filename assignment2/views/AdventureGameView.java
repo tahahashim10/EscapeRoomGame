@@ -33,6 +33,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javafx.event.EventHandler;
+
+//TODO: Taha Phase 2 Timer User Story
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
  * Class AdventureGameView.
@@ -48,7 +55,7 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
-    Button saveButton, loadButton, helpButton; //buttons
+    Button saveButton, loadButton, helpButton, restartButton, hintButton; //buttons
     Boolean helpToggle = false; //is help on display?
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
@@ -57,9 +64,12 @@ public class AdventureGameView {
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
     TextField inputTextField; //for user input
-
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
+    private int timerSeconds = 1200;
+
+    Label timerLabel = new Label();
+
 
     /**
      * Adventure Game View Constructor
@@ -75,12 +85,80 @@ public class AdventureGameView {
     }
 
     /**
+     * Private instance variable to manage the timer using.
+     *
+     * The timer updates every second.
+     */
+    private Timeline timer = new Timeline(
+            new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    updateTimer();
+                }
+            })
+    );
+
+    /**
+     * Updates the timer.
+     *
+     * Calls announceRemainingTime function when 5 minutes pass to play audio of the time remaining.
+     */
+    private void updateTimer(){
+        int minutes = timerSeconds / 60;
+        int seconds = timerSeconds % 60;
+        timerLabel.setText("Time Remaining: " + String.format("%02d:%02d", minutes, seconds));
+
+        timerSeconds--;
+
+        if (timerSeconds < 0) {
+            stopArticulation();
+            timer.stop();
+            Label gameOverLabel = new Label("Game Over");
+            VBox vBox = new VBox();
+            vBox.setSpacing(10);
+            vBox.setAlignment(Pos.CENTER);
+            vBox.setPadding(new Insets(-20, 0, 0, 0));
+            vBox.getChildren().add(gameOverLabel);
+            gridPane.add(vBox, 1, 1, 1, 1);
+            gameOverLabel.setStyle("-fx-text-fill: red; -fx-font-size: 115; -fx-rotate: 15;");
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+                Platform.exit();
+            });
+            pause.play();
+
+        }else if (timerSeconds % 300 == 0) { // Check if 5 minutes have passed
+            playAudioTime(5);
+        }
+    }
+
+    /**
+     * Announces the remaining time with an audio file played through JavaFX MediaPlayer.
+     *
+     * @param minutes: The remaining minutes in the timer.
+     */
+    private void playAudioTime(int minutes) {
+        String audiofile = "./" + this.model.getDirectoryName() + "/sounds/" + minutes + "audiotime.mp3";
+        Media sound = new Media(new File(audiofile).toURI().toString());
+        MediaPlayer audioPlayer = new MediaPlayer(sound);
+        audioPlayer.play();
+    }
+
+    /**
+     * Configures and starts the game timer.
+     */
+    private void startTimer() {
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+    }
+
+    /**
      * Initialize the UI
      */
     public void intiUI() {
 
         // setting up the stage
-        this.stage.setTitle("hashimt1's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
+        this.stage.setTitle("Escape Room Game");
 
         //Inventory + Room items
         objectsInInventory.setSpacing(10);
@@ -113,6 +191,8 @@ public class AdventureGameView {
         gridPane.getColumnConstraints().addAll( column1 , column2 , column1 );
         gridPane.getRowConstraints().addAll( row1 , row2 , row1 );
 
+
+
         // Buttons
         saveButton = new Button("Save");
         saveButton.setId("Save");
@@ -132,10 +212,23 @@ public class AdventureGameView {
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
+        restartButton = new Button("Restart");
+        restartButton.setId("Restart");
+        customizeButton(restartButton, 100, 50);
+        makeButtonAccessible(restartButton, "Restart Button", "This button restarts the game", "This button restarts the game. Click it to start the game from zero");
+        addRestartEvent();
+
+        hintButton = new Button("Hint");
+        hintButton.setId("Hint");
+        customizeButton(hintButton, 100, 50);
+        makeButtonAccessible(hintButton, "Hint Button", "Get a hint for the game.", "Click to get a hint for the game.");
+        addHintEvent(hintButton);
+
         HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton);
+        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton, hintButton);
         topButtons.setSpacing(10);
         topButtons.setAlignment(Pos.CENTER);
+
 
         inputTextField = new TextField();
         inputTextField.setFont(new Font("Arial", 16));
@@ -180,11 +273,24 @@ public class AdventureGameView {
         gridPane.add( textEntry, 0, 2, 3, 1 );
 
         // Render everything
-        var scene = new Scene( gridPane ,  1000, 800);
+        var scene = new Scene( gridPane , 1000, 800);
         scene.setFill(Color.BLACK);
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
+
+        //TODO: Phase 2 Taha Timer User Story
+        VBox vBox = new VBox();
+        vBox.setSpacing(10);
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.setPadding(new Insets(500, 0, 0, 0));
+        vBox.getChildren().add(timerLabel);
+        gridPane.add(vBox, 1, 1, 1, 1);
+        timerLabel.setStyle("-fx-text-fill: red;");
+        timerLabel.setFont(new Font("Arial", 16));
+
+        //TODO: Phase 2 Taha Timer User Story
+        startTimer();
 
     }
 
@@ -273,6 +379,7 @@ public class AdventureGameView {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
+            // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
@@ -364,7 +471,10 @@ public class AdventureGameView {
         stage.sizeToScene();
 
         //finally, articulate the description
+
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+
+
     }
 
     /**
@@ -397,7 +507,7 @@ public class AdventureGameView {
     private void getRoomImage() {
 
         int roomNumber = this.model.getPlayer().getCurrentRoom().getRoomNumber();
-        String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".png";
+        String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".jpg";
 
         Image roomImageFile = new Image(roomImage);
         roomImageView = new ImageView(roomImageFile);
@@ -479,6 +589,7 @@ public class AdventureGameView {
                 public void handle(KeyEvent e) {
                     //if user enters enter, take the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
+
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
                         updateItems();
                     }
@@ -487,6 +598,7 @@ public class AdventureGameView {
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
+                    System.out.println("asdfasdf");
                     //if user left-clicks, take the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
@@ -659,14 +771,51 @@ public class AdventureGameView {
         }
     }
 
+    private void displayHint() {
+        // Retrieve the hint from your model or any relevant source
+//       TODO String hint = model.getHint(); // Replace with the actual method to get the hint
+        String hint = "yoyoyoyoyoyoyo";
+
+        // Display the hint to the user (you can use a dialog, label, or any other UI element)
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Hint");
+        alert.setHeaderText(null);
+        alert.setContentText(hint);
+        alert.showAndWait();
+    }
+
     /**
      * This method handles the event related to the
      * help button.
      */
     public void addInstructionEvent() {
         helpButton.setOnAction(e -> {
+            System.out.println("HERE");
             stopArticulation(); //if speaking, stop
             showInstructions();
+        });
+
+    }
+
+    /**
+     * This method handles the event related to the
+     * hint button.
+     */
+    public void addRestartEvent() {
+        restartButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            this.model.restart();
+        });
+    }
+
+    /**
+     * This method handles the event related to the
+     * hint button.
+     */
+    private void addHintEvent(Button hintButton) {
+        hintButton.setOnAction(e -> {
+            stopArticulation(); //if speaking, stop
+            displayHint();
         });
     }
 
@@ -724,3 +873,4 @@ public class AdventureGameView {
         }
     }
 }
+

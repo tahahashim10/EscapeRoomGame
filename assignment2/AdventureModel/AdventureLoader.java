@@ -145,4 +145,17 @@ public class AdventureLoader {
         return text;
     }
 
+    /**
+     * Parse help.txt file
+     */
+    public String parseHelpFile() throws IOException {
+        String text = "";
+        String helpFileName = this.adventureName + "/help.txt";
+        BufferedReader buff = new BufferedReader(new FileReader(helpFileName));
+        String line = buff.readLine();
+        while(line != null){
+            text += line + "\n";
+            line = buff.readLine();}
+        return text;}
+
 }
