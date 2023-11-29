@@ -116,6 +116,7 @@ public class Room implements Serializable {
      */
     public void removeGameObject(AdventureObject object){
         this.objectsInRoom.remove(object);
+        this.allObjects.remove(object);
     }
 
     /**
