@@ -1,0 +1,1 @@
+Assemble the initial letters from each obtained clue to unveil the correct password.
