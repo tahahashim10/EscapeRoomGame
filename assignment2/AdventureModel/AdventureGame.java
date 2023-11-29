@@ -13,6 +13,8 @@ public class AdventureGame implements Serializable {
     private HashMap<String,String> synonyms = new HashMap<>(); //A HashMap to store synonyms of commands.
     private final String[] actionVerbs = {"QUIT","INVENTORY","TAKE","DROP"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
     public Player player; //The Player of the game.
+    private String hintText; //A variable to store the hint text of the game. This text is displayed when the user types "HINT" command.
+    private int totalClues;
 
     /**
      * Adventure Game Constructor
@@ -25,6 +27,7 @@ public class AdventureGame implements Serializable {
         this.synonyms = new HashMap<>();
         this.rooms = new HashMap<>();
         this.directoryName = "Games/" + name; //all games files are in the Games directory!
+        this.totalClues = 0;
         try {
             setUpGame();
         } catch (IOException e) {
@@ -205,6 +208,16 @@ public class AdventureGame implements Serializable {
     }
 
     /**
+     * getHint
+     * __________________________
+     * Getter method for hint
+     * @return hintText
+     */
+    public String getHint() {
+        return hintText;
+    }
+
+    /**
      * getPlayer
      * __________________________
      * Getter method for Player
@@ -234,6 +247,16 @@ public class AdventureGame implements Serializable {
     }
 
     /**
+     * getTotalClues
+     * __________________________
+     * Getter method for totalClues
+     * @return int value of totalClues
+     */
+    public int getTotalClues() {
+        return this.totalClues;
+    }
+
+    /**
      * setHelpText
      * __________________________
      * Setter method for helpText
@@ -241,6 +264,26 @@ public class AdventureGame implements Serializable {
      */
     public void setHelpText(String help) {
         this.helpText = help;
+    }
+
+    /**
+     * setHintText
+     * __________________________
+     * Setter method for hintText
+     * @param hint which is text to set
+     */
+    public void setHintText(String hint) {
+        this.hintText = hint;
+    }
+
+    /**
+     * setTotalClues
+     * __________________________
+     * Setter method for totalClues
+     * @param clues which is text to set
+     */
+    public void setTotalClues(int clues) {
+        this.totalClues = clues;
     }
 
 

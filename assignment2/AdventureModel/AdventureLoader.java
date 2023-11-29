@@ -11,6 +11,7 @@ public class AdventureLoader {
 
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
+    private int clueNumbers;
 
     /**
      * Adventure Loader Constructor
@@ -22,6 +23,7 @@ public class AdventureLoader {
     public AdventureLoader(AdventureGame game, String directoryName) {
         this.game = game;
         this.adventureName = directoryName;
+        this.clueNumbers = 0;
     }
 
      /**
@@ -32,6 +34,8 @@ public class AdventureLoader {
         parseObjects();
         parseSynonyms();
         this.game.setHelpText(parseOtherFile("help"));
+        this.game.setHintText(parseOtherFile("hint"));
+        this.game.setTotalClues(clueNumbers);
     }
 
      /**
@@ -98,6 +102,7 @@ public class AdventureLoader {
 
         while (buff.ready()) {
             String objectName = buff.readLine();
+            clueNumbers++;
             String objectDescription = buff.readLine();
             String objectLocation = buff.readLine();
             String separator = buff.readLine();

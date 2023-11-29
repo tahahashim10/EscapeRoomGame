@@ -772,16 +772,17 @@ public class AdventureGameView {
     }
 
     private void displayHint() {
-        // Retrieve the hint from your model or any relevant source
-//       TODO String hint = model.getHint(); // Replace with the actual method to get the hint
-        String hint = "yoyoyoyoyoyoyo";
 
-        // Display the hint to the user (you can use a dialog, label, or any other UI element)
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Hint");
-        alert.setHeaderText(null);
-        alert.setContentText(hint);
-        alert.showAndWait();
+        if(this.model.getPlayer().getInventory().size() == this.model.getTotalClues()){
+            // Retrieve the hint from your model or any relevant source
+            String hint = model.getHint();
+            // Display the hint to the user (you can use a dialog, label, or any other UI element)
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Hint");
+            alert.setHeaderText(null);
+            alert.setContentText(hint);
+            alert.showAndWait();
+        }
     }
 
     /**
