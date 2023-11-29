@@ -63,12 +63,10 @@ public class AdventureGameView {
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
     TextField inputTextField; //for user input
-
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
+    private int timerSeconds = 1200;
 
-    //TODO: Phase 2 Taha Timer User Story
-    private int timerSeconds = 10;
     Label timerLabel = new Label();
 
 
@@ -84,7 +82,12 @@ public class AdventureGameView {
         this.stage = stage;
         intiUI();
     }
-    //TODO: Phase 2 Taha Timer User Story
+
+    /**
+     * Private instance variable to manage the timer using.
+     *
+     * The timer updates every second.
+     */
     private Timeline timer = new Timeline(
             new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
                 @Override
@@ -93,7 +96,12 @@ public class AdventureGameView {
                 }
             })
     );
-    //TODO: Phase 2 Taha Timer User Story
+
+    /**
+     * Updates the timer.
+     *
+     * Calls announceRemainingTime function when 5 minutes pass to play audio of the time remaining.
+     */
     private void updateTimer(){
         int minutes = timerSeconds / 60;
         int seconds = timerSeconds % 60;
@@ -117,8 +125,23 @@ public class AdventureGameView {
             });
             pause.play();
 
+        }else if (timerSeconds % 300 == 0) { // Check if 5 minutes have passed
+            playAudioTime(5);
         }
     }
+
+    /**
+     * Announces the remaining time with an audio file played through JavaFX MediaPlayer.
+     *
+     * @param minutes: The remaining minutes in the timer.
+     */
+    private void playAudioTime(int minutes) {
+        String audiofile = "./" + this.model.getDirectoryName() + "/sounds/" + minutes + "audiotime.mp3";
+        Media sound = new Media(new File(audiofile).toURI().toString());
+        MediaPlayer audioPlayer = new MediaPlayer(sound);
+        audioPlayer.play();
+    }
+
     //TODO: Phase 2 Taha Timer User Story
     private void startTimer() {
         timer.setCycleCount(Timeline.INDEFINITE);
@@ -346,6 +369,7 @@ public class AdventureGameView {
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
             // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
+            articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
             showInstructions();
@@ -436,10 +460,10 @@ public class AdventureGameView {
         stage.sizeToScene();
 
         //finally, articulate the description
-        /*
+
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
 
-         */
+
     }
 
     /**
@@ -727,7 +751,7 @@ public class AdventureGameView {
             roomPane.setStyle("-fx-background-color: #000000;");
             gridPane.add(roomPane, 1, 1);
             stage.sizeToScene();
-            //articulateRoomDescription();
+            articulateRoomDescription();
 
             //set the helpToggle to FALSE
             helpToggle = false;
@@ -806,3 +830,4 @@ public class AdventureGameView {
         }
     }
 }
+
