@@ -1,13 +1,8 @@
 package views;
 
-import AdventureModel.AdventureGame;
-import AdventureModel.AdventureObject;
-import AdventureModel.Passage;
-import AdventureModel.PassageTable;
+import AdventureModel.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -32,7 +27,6 @@ import javafx.scene.AccessibleRole;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Class AdventureGameView.
@@ -61,6 +55,18 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
+
+    public prisonMiniGame prisonGame;
+    public crimeMiniGame crimeGame;
+    public zombieMiniGame zombieGame;
+    public futureMiniGame futureGame;
+
+    public int currQuestionIndex = 0;
+
+
+
+    AdventureGameController gameController;
+
     /**
      * Adventure Game View Constructor
      * __________________________
@@ -71,6 +77,11 @@ public class AdventureGameView {
     public AdventureGameView(AdventureGame model, Stage stage) {
         this.model = model;
         this.stage = stage;
+        prisonGame = new prisonMiniGame();
+        crimeGame = new crimeMiniGame();
+        zombieGame = new zombieMiniGame();
+        futureGame = new futureMiniGame();
+
         intiUI();
     }
 
@@ -289,7 +300,9 @@ public class AdventureGameView {
             inputTextField.setDisable(false);
         }
 
-        if (output == null || (!output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
+
+        // ANGELA ***************
+        if (output == null || (!output.equals("PLAY") && !output.equals("ANSWER")& !output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
             updateScene(output);
             updateItems();
         } else if (output.equals("GAME OVER")) {
@@ -318,8 +331,52 @@ public class AdventureGameView {
                 submitEvent("FORCED");
             });
             pause.play();
+
+        //ANGELA ***************************************
+        }else if (output.equals("PLAY")){
+            MiniGame currGame = this.returnMini();
+            updateScene((String) currGame.getQuestionList().get(currQuestionIndex % 3));
+
+        }else if (output.startsWith("ANSWER")){
+               output = text.strip().substring(6,text.strip().length());
+               System.out.println(output);
+               if(prisonGame.playGame(output, currQuestionIndex)){
+                   updateScene("answerCorrect");
+                   currQuestionIndex += 1;
+               }else{
+
+                   updateScene("answer Incorrect, enter PLAY again to answer the question. ");
+
+
+               }
+           }
+
+
+
+
         }
+
+    // return the correct miniGame
+    public MiniGame returnMini(){
+        if(this.model.player.getCurrentRoom().getRoomNumber() == 1){
+            return (MiniGame) crimeGame;
+
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
+            return (MiniGame) prisonGame;
+
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
+
+        }else if(this.model.player.getCurrentRoom().getRoomNumber() == 4){
+
+        }
+
+        return (MiniGame) prisonGame;
+
     }
+
+
+
+
 
     /**
      * showCommands

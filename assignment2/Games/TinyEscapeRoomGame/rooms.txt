@@ -3,18 +3,21 @@ Crime Room
 You are a meticulously secured and well-lit crime room equipped with advanced forensic tools and evidence storage facilities serves as the controlled environment where investigators meticulously collect, analyze, and document crucial evidence in the pursuit of solving criminal cases.
 -----
 WEST       2
+PLAY       1
 
 2
 Prison Room
 You are in a sparsely furnished prison room, its cold, concrete walls and narrow barred window underscoring its stark confinement, houses a simple bed, a small desk, and a metal toilet, creating an environment that reflects the restrictive nature of incarceration.
 -----
 EAST       3
+PLAY       2
 
 3
 Future Room
 A futuristic room, characterized by seamless integration of smart technology, holographic displays, and sustainable design, features responsive ambient lighting, self-adjusting climate control, and interactive surfaces, creating an immersive and efficient living or working space in harmony with cutting-edge advancements.
 -----
 SOUTH      4
+PLAY       3
 WEST       5
 OUT        6/BIRD
 OUT        1
@@ -29,6 +32,7 @@ Zombie Room
 You are in a chilling Zombie Room, bathed in dim, flickering light and echoing with ominous groans, immerses participants in a post-apocalyptic setting adorned with blood-stained walls, scattered debris, and eerily realistic zombie props, creating an adrenaline-fueled escape experience.
 -----
 NORTH      1
+PLAY       4
 UP         1
 SOUTH      5
 DOWN       5

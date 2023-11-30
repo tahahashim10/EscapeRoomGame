@@ -18,6 +18,7 @@ public class AdventureGame implements Serializable {
     public Player player; //The Player of the game.
 
 
+
     // Declare a controller ************************
     AdventureGameController gameController;
 
