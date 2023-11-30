@@ -20,6 +20,11 @@ public class AdventureObject implements Serializable {
     private String description;
 
     /**
+     * The answer of the clue object.
+     */
+    private String answer;
+
+    /**
      * The location of the object.
      */
     private Room location = null;
@@ -33,10 +38,11 @@ public class AdventureObject implements Serializable {
      * @param description One line description of the Object.
      * @param location The location of the Object in the game.
      */
-    public AdventureObject(String name, String description, Room location){
+    public AdventureObject(String name, String description, Room location,  String answer){
         this.objectName = name;
         this.description = description;
         this.location = location;
+        this.answer = answer;
     }
 
     /**
@@ -55,6 +61,15 @@ public class AdventureObject implements Serializable {
      */
     public String getDescription(){
         return this.description;
+    }
+
+    /**
+     * Getter method for the answer attribute.
+     *
+     * @return answer of the clue
+     */
+    public String getAnswer(){
+        return this.answer;
     }
 
     /**

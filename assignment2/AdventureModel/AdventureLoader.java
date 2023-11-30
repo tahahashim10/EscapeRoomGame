@@ -11,7 +11,7 @@ public class AdventureLoader {
 
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
-    private int clueNumbers;
+    private int clueNumbers = 3;
 
     /**
      * Adventure Loader Constructor
@@ -23,7 +23,6 @@ public class AdventureLoader {
     public AdventureLoader(AdventureGame game, String directoryName) {
         this.game = game;
         this.adventureName = directoryName;
-        this.clueNumbers = 0;
     }
 
      /**
@@ -65,9 +64,10 @@ public class AdventureLoader {
                 line = buff.readLine();
             }
             roomDescription += "\n";
+            String roomPass = buff.readLine();
 
             // now we make the room object
-            Room room = new Room(roomName, roomNumber, roomDescription, adventureName);
+            Room room = new Room(roomName, roomNumber, roomDescription, adventureName, roomPass);
 
             // now we make the motion table
             line = buff.readLine(); // reads the line after "-----"
@@ -102,16 +102,17 @@ public class AdventureLoader {
 
         while (buff.ready()) {
             String objectName = buff.readLine();
-            clueNumbers++;
             String objectDescription = buff.readLine();
+            String objectAnswer = buff.readLine();
             String objectLocation = buff.readLine();
             String separator = buff.readLine();
             if (separator != null && !separator.isEmpty())
                 System.out.println("Formatting Error!");
             int i = Integer.parseInt(objectLocation);
             Room location = this.game.getRooms().get(i);
-            AdventureObject object = new AdventureObject(objectName, objectDescription, location);
+            AdventureObject object = new AdventureObject(objectName, objectDescription, location, objectAnswer);
             location.addGameObject(object);
+
         }
 
     }

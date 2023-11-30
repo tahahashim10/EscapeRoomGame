@@ -30,6 +30,9 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,11 +43,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-//imports for the articulateObj method
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import javafx.scene.media.MediaException;
 
 /**
  * Class AdventureGameView.
@@ -72,9 +70,7 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
     private int timerSeconds = 1200;
-
     Label timerLabel = new Label();
-
 
     /**
      * Adventure Game View Constructor
@@ -88,6 +84,7 @@ public class AdventureGameView {
         this.stage = stage;
         intiUI();
     }
+
 
     /**
      * Private instance variable to manage the timer using.
@@ -211,9 +208,9 @@ public class AdventureGameView {
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
-        helpButton = new Button("Help");
-        helpButton.setId("Help");
-        customizeButton(helpButton, 100, 50);
+        helpButton = new Button("Instructions");
+        helpButton.setId("Instructions");
+        customizeButton(helpButton, 200, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
@@ -263,9 +260,9 @@ public class AdventureGameView {
         invLabel.setFont(new Font("Arial", 16));
 
         //add all the widgets to the GridPane
-        gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
-        gridPane.add( topButtons, 1, 0, 1, 1 );  // Add buttons
-        gridPane.add( invLabel, 2, 0, 1, 1 );  // Add label
+        gridPane.add(objLabel, 0, 0, 1, 1 );  // Add label
+        gridPane.add(topButtons, 1, 0, 1, 1 );  // Add buttons
+        gridPane.add(invLabel, 2, 0, 1, 1 );  // Add label
 
         Label commandLabel = new Label("What would you like to do?");
         commandLabel.setStyle("-fx-text-fill: white;");
@@ -291,14 +288,10 @@ public class AdventureGameView {
         this.stage.show();
 
         //TODO: Phase 2 Taha Timer User Story
-        VBox vBox = new VBox();
-        vBox.setSpacing(10);
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.setPadding(new Insets(500, 0, 0, 0));
-        vBox.getChildren().add(timerLabel);
-        gridPane.add(vBox, 1, 1, 1, 1);
         timerLabel.setStyle("-fx-text-fill: red;");
         timerLabel.setFont(new Font("Arial", 16));
+        gridPane.add(timerLabel, 1, 0, 1, 1); // Align to the top
+        GridPane.setMargin(timerLabel, new Insets(-50, 100, 50, 250));
 
         //TODO: Phase 2 Taha Timer User Story
         startTimer();
@@ -390,7 +383,6 @@ public class AdventureGameView {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-            // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
@@ -403,6 +395,43 @@ public class AdventureGameView {
 
         //try to move!
         String output = this.model.interpretAction(text); //process the command!
+
+        if(Objects.equals(output, "VICTORY")){
+            inputTextField.setDisable(true);
+            updateItems();
+
+            getRoomImage(); //get the image of the current room
+            formatText(this.model.getPlayer().getCurrentRoom().getRoomDescription()); //format the text to display
+            roomDescLabel.setPrefWidth(500);
+            roomDescLabel.setPrefHeight(500);
+            roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
+            roomDescLabel.setWrapText(true);
+            VBox roomPane = new VBox(roomImageView,roomDescLabel);
+            roomPane.setPadding(new Insets(10));
+            roomPane.setAlignment(Pos.TOP_CENTER);
+            roomPane.setStyle("-fx-background-color: #000000;");
+            gridPane.add(roomPane, 1, 1);
+            stage.sizeToScene();
+
+            articulateVictory("victory");
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+
+                articulateVictory("final");
+                // Update the room description again
+                formatText(this.model.getPlayer().getCurrentRoom().getRoomDescription());
+
+                // Create another pause for the final audio to finish before exiting
+                PauseTransition pause2 = new PauseTransition(Duration.seconds(12));
+                pause2.setOnFinished(exitEvent -> {
+                    Platform.exit();
+                });
+                pause2.play();
+            });
+            pause.play();
+
+        }
+
         if(output == null || !output.equals("FORCED")){
             inputTextField.setDisable(false);
         }
@@ -564,10 +593,12 @@ public class AdventureGameView {
             }
         }
 
+
         //clear all objects in room
         objectsInRoom.getChildren().clear();
         //an arraylist to store all the objects in the current room
         ArrayList<AdventureObject> listObjectsInRoom = model.getPlayer().getCurrentRoom().objectsInRoom;
+
         //loop through all the objects in the current room
         for(int i = 0; i < listObjectsInRoom.size(); i++){
             //citation for ImageView : https://docs.oracle.com/javase/8/javafx/api/javafx/scene/image/ImageView.html
@@ -610,7 +641,6 @@ public class AdventureGameView {
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
-                    System.out.println("asdfasdf");
                     //if user left-clicks, take the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
                         articulateObjName(listObjectsInRoom.get(tempI).getName());
@@ -624,9 +654,6 @@ public class AdventureGameView {
             button.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
             button.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
             //add the button to the objects in room
-            if(flagForced){
-                button.setDisable(true);
-            }
             objectsInRoom.getChildren().add(button);
 
         }
@@ -681,10 +708,6 @@ public class AdventureGameView {
             //register the handlers
             button2.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
             button2.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
-
-            if(flagForced){ //if forced room, disable button
-                button2.setDisable(true);
-            }
             //add the button to the objects in inventory
             objectsInInventory.getChildren().add(button2);
         }
@@ -787,6 +810,7 @@ public class AdventureGameView {
     private void displayHint() {
 
         if(this.model.getPlayer().getInventory().size() == this.model.getTotalClues()){
+            articulateHint();
             // Retrieve the hint from your model or any relevant source
             String hint = model.getHint();
             // Display the hint to the user (you can use a dialog, label, or any other UI element)
@@ -794,8 +818,29 @@ public class AdventureGameView {
             alert.setTitle("Hint");
             alert.setHeaderText(null);
             alert.setContentText(hint);
+
+            // Set the result converter to stop the voice when the alert is closed
+            alert.setResultConverter(dialogButton -> {
+                stopArticulation(); // Stop voice when the alert is closed
+                return null;
+            });
+
             alert.showAndWait();
         }
+    }
+
+
+    private void articulateHint() {
+        String musicFile;
+        String adventureName = this.model.getDirectoryName();
+
+        musicFile = "./" + adventureName + "/sounds/" + "hint.mp3" ;
+
+        Media sound = new Media(new File(musicFile).toURI().toString());
+
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+        mediaPlaying = true;
     }
 
     /**
@@ -826,7 +871,6 @@ public class AdventureGameView {
         });
     }
 
-
     public void addExitEvent() {
         exitButton.setOnAction(e -> {
             gridPane.requestFocus();
@@ -834,14 +878,19 @@ public class AdventureGameView {
             System.exit(0);
         });
     }
+
     /**
      * This method handles the event related to the
      * hint button.
      */
     private void addHintEvent(Button hintButton) {
+        System.out.println(this.model.getPlayer().getInventory().size());
+        System.out.println(this.model.getTotalClues());
         hintButton.setOnAction(e -> {
-            stopArticulation(); //if speaking, stop
-            displayHint();
+            if(this.model.getPlayer().getInventory().size() == this.model.getTotalClues()){
+                stopArticulation(); //if speaking, stop
+                displayHint();
+            }
         });
     }
 
@@ -865,6 +914,36 @@ public class AdventureGameView {
             gridPane.requestFocus();
             LoadView loadView = new LoadView(this);
         });
+    }
+
+    /**
+     * This method articulates Room Descriptions
+     */
+    public void articulateRoomDescription() {
+        String musicFile;
+        String adventureName = this.model.getDirectoryName();
+        String roomName = this.model.getPlayer().getCurrentRoom().getRoomName();
+
+        if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
+        else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
+        musicFile = musicFile.replace(" ","-");
+
+        Media sound = new Media(new File(musicFile).toURI().toString());
+
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+        mediaPlaying = true;
+    }
+
+    /**
+     * This method articulates victory room descriptions
+     */
+    public void articulateVictory(String file) {
+        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + file + ".mp3" ;
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+        mediaPlaying = true;
     }
 
     /**
@@ -895,27 +974,6 @@ public class AdventureGameView {
         } else {
             System.out.println("File not found or is not a regular file.");
         }
-    }
-
-
-    /**
-     * This method articulates Room Descriptions
-     */
-    public void articulateRoomDescription() {
-        String musicFile;
-        String adventureName = this.model.getDirectoryName();
-        String roomName = this.model.getPlayer().getCurrentRoom().getRoomName();
-
-        if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
-        else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
-        musicFile = musicFile.replace(" ","-");
-
-        Media sound = new Media(new File(musicFile).toURI().toString());
-
-        mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
-        mediaPlaying = true;
-
     }
 
     /**
