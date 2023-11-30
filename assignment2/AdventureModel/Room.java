@@ -40,6 +40,7 @@ public class Room implements Serializable {
      * The list of objects in the room.
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
+
     /**
      * The list of the initial objects in the room.
      */
@@ -49,6 +50,10 @@ public class Room implements Serializable {
      * A boolean to store if the room has been visited or not
      */
     private boolean isVisited;
+    /**
+     * The number of the room.
+     */
+    private String roomPassword;
 
     /**
      * AdvGameRoom constructor.
@@ -58,12 +63,13 @@ public class Room implements Serializable {
      * @param roomDescription: The description of the room.
      * @param adventureName: The name of the adventure game.
      */
-    public Room(String roomName, int roomNumber, String roomDescription, String adventureName){
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, String roomPassword){
         this.roomName = roomName;
         this.roomNumber = roomNumber;
         this.roomDescription = roomDescription;
         this.adventureName = adventureName;
         this.isVisited = false;
+        this.roomPassword = roomPassword;
     }
 
 
@@ -117,7 +123,6 @@ public class Room implements Serializable {
         if (objCounter <3) {
             if (!initObjects.contains(object)) {
                 this.initObjects.add(object);
-
             }
         }
         objCounter++;
@@ -219,6 +224,15 @@ public class Room implements Serializable {
      */
     public PassageTable getMotionTable(){
         return this.motionTable;
+    }
+
+    /**
+     * Getter method for the room password.
+     *
+     * @return room password
+     */
+    public String getRoomPassword(){
+        return this.roomPassword;
     }
 
 
