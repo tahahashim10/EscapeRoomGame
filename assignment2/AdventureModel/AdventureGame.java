@@ -11,10 +11,12 @@ public class AdventureGame implements Serializable {
     private String helpText; //A variable to store the Help text of the game. This text is displayed when the user types "HELP" command.
     private final HashMap<Integer, Room> rooms; //A list of all the rooms in the game.
     private HashMap<String,String> synonyms = new HashMap<>(); //A HashMap to store synonyms of commands.
-    private final String[] actionVerbs = {"QUIT","INVENTORY","TAKE","DROP"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
+    private final String[] actionVerbs = {"QUIT","INVENTORY", "VIEW", "PASSWORD"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
     public Player player; //The Player of the game.
     private String hintText; //A variable to store the hint text of the game. This text is displayed when the user types "HINT" command.
     private int totalClues;
+
+    public static AdventureGame game;
 
     /**
      * Adventure Game Constructor
@@ -33,6 +35,13 @@ public class AdventureGame implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException("An Error Occurred: " + e.getMessage());
         }
+    }
+
+    public static AdventureGame getGame() {
+        if (AdventureGame.game == null){
+            game = new AdventureGame("TinyEscapeRoomGame");
+        }
+        return game;
     }
 
     /**
@@ -75,8 +84,12 @@ public class AdventureGame implements Serializable {
      */
     public String[] tokenize(String input){
 
-        input = input.toUpperCase();
+        //input = input.toUpperCase();
         String[] commandArray = input.split(" ");
+
+        if (commandArray.length > 0) {
+            commandArray[0] = commandArray[0].toUpperCase();
+        }
 
         int i = 0;
         while (i < commandArray.length) {
@@ -140,6 +153,7 @@ public class AdventureGame implements Serializable {
         for (Room room : this.rooms.values()) {
             room.reset();
         }
+
     }
 
     /**
@@ -165,22 +179,30 @@ public class AdventureGame implements Serializable {
             if(inputArray[0].equals("QUIT")) { return "GAME OVER"; } //time to stop!
             else if(inputArray[0].equals("INVENTORY") && this.player.getInventory().size() == 0) return "INVENTORY IS EMPTY";
             else if(inputArray[0].equals("INVENTORY") && this.player.getInventory().size() > 0) return "THESE OBJECTS ARE IN YOUR INVENTORY:\n" + this.player.getInventory().toString();
-            else if(inputArray[0].equals("TAKE") && inputArray.length < 2) return "THE TAKE COMMAND REQUIRES AN OBJECT";
-            else if(inputArray[0].equals("DROP") && inputArray.length < 2) return "THE DROP COMMAND REQUIRES AN OBJECT";
-            else if(inputArray[0].equals("TAKE") && inputArray.length == 2) {
-                if(this.player.getCurrentRoom().checkIfObjectInRoom(inputArray[1])) {
-                    this.player.takeObject(inputArray[1]);
-                    return "YOU HAVE TAKEN:\n " + inputArray[1];
+            else if(inputArray[0].equals("VIEW") && inputArray.length < 2) return "THE TAKE COMMAND REQUIRES A CLUE";
+            else if(inputArray[0].equals("VIEW") && inputArray.length == 2) {
+                if(this.player.getInventory().contains(inputArray[1])){
+                    return this.player.getObjectByName(inputArray[1]).getAnswer();
                 } else {
-                    return "THIS OBJECT IS NOT HERE:\n " + inputArray[1];
+                    return "THIS CLUE IS NOT IN YOUR INVENTORY:\n " + inputArray[1];
                 }
             }
-            else if(inputArray[0].equals("DROP") && inputArray.length == 2) {
-                if(this.player.checkIfObjectInInventory(inputArray[1])) {
-                    this.player.dropObject(inputArray[1]);
-                    return "YOU HAVE DROPPED:\n " + inputArray[1];
-                } else {
-                    return "THIS OBJECT IS NOT IN YOUR INVENTORY:\n " + inputArray[1];
+            else if(inputArray[0].equals("PASSWORD") && inputArray.length < 2) return "EMPTY PASSWORD.";
+            else if(inputArray[0].equals("PASSWORD") && inputArray.length == 2) {
+                if(Objects.equals(this.player.getCurrentRoom().getRoomPassword(), inputArray[1])){
+                    if(player.getCurrentRoom().getRoomNumber() + 1 <= 4){
+                        this.player = new Player(this.rooms.get(player.getCurrentRoom().getRoomNumber() + 1));
+                        for (Room room : this.rooms.values()) {
+                            room.reset();
+                        }
+                        return null;
+                    } else {
+                        movePlayer("WIN");
+                        return "VICTORY";
+                    }
+
+                } else{
+                    return "INCORRECT PASSWORD.";
                 }
             }
         }

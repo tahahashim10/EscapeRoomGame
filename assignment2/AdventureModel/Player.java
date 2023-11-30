@@ -78,6 +78,22 @@ public class Player implements Serializable {
     }
 
     /**
+     * Get an object from the player's inventory by its name.
+     *
+     * @param objectName The name of the object to retrieve.
+     * @return The AdventureObject with the specified name, or null if not found.
+     */
+    public AdventureObject getObjectByName(String objectName) {
+        for (AdventureObject object : this.inventory) {
+            if (object.getName().equals(objectName)) {
+                return object;
+            }
+        }
+        // If the object is not found, return null
+        return null;
+    }
+
+    /**
      * Setter method for the current room attribute.
      *
      * @param currentRoom The location of the player in the game.
