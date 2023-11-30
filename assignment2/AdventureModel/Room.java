@@ -27,6 +27,11 @@ public class Room implements Serializable {
     private String roomDescription;
 
     /**
+     * Object counter to keep track of the first object to add in order to reset
+     * */
+    private int objCounter;
+
+    /**
      * The passage table for the room.
      */
     private PassageTable motionTable = new PassageTable();
@@ -35,7 +40,10 @@ public class Room implements Serializable {
      * The list of objects in the room.
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
-    public ArrayList<AdventureObject> allObjects = new ArrayList<AdventureObject>();
+    /**
+     * The list of the initial objects in the room.
+     */
+    public ArrayList<AdventureObject> initObjects = new ArrayList<AdventureObject>();
 
     /**
      * A boolean to store if the room has been visited or not
@@ -106,7 +114,13 @@ public class Room implements Serializable {
      */
     public void addGameObject(AdventureObject object){
         this.objectsInRoom.add(object);
-        this.allObjects.add(object);
+        if (objCounter <3) {
+            if (!initObjects.contains(object)) {
+                this.initObjects.add(object);
+
+            }
+        }
+        objCounter++;
     }
 
     /**
@@ -154,7 +168,9 @@ public class Room implements Serializable {
     public void reset() {
         // set the room as not visited and make sure it has all its objects
         this.isVisited = false;
-        this.objectsInRoom = allObjects;
+        objectsInRoom.clear();
+        objectsInRoom.addAll(initObjects);
+        this.objCounter = 0;
     }
 
     /**
