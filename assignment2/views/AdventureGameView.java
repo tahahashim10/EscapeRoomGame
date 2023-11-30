@@ -40,6 +40,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+//imports for the articulateObj method
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javafx.scene.media.MediaException;
 
 /**
  * Class AdventureGameView.
@@ -55,7 +60,7 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
-    Button saveButton, loadButton, helpButton, restartButton, hintButton; //buttons
+    Button saveButton, loadButton, helpButton, restartButton, hintButton, exitButton; //buttons
     Boolean helpToggle = false; //is help on display?
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
@@ -206,9 +211,9 @@ public class AdventureGameView {
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
-        helpButton = new Button("Instructions");
-        helpButton.setId("Instructions");
-        customizeButton(helpButton, 200, 50);
+        helpButton = new Button("Help");
+        helpButton.setId("Help");
+        customizeButton(helpButton, 100, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
@@ -224,8 +229,14 @@ public class AdventureGameView {
         makeButtonAccessible(hintButton, "Hint Button", "Get a hint for the game.", "Click to get a hint for the game.");
         addHintEvent(hintButton);
 
+        exitButton = new Button("Exit");
+        exitButton.setId("Exit");
+        customizeButton(exitButton, 100, 50);
+        makeButtonAccessible(exitButton, "Exit Button", "Exit the game", "Click to exit the game.");
+        addExitEvent();
+
         HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton, hintButton);
+        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton, hintButton, exitButton);
         topButtons.setSpacing(10);
         topButtons.setAlignment(Pos.CENTER);
 
@@ -591,6 +602,7 @@ public class AdventureGameView {
                     if (e.getCode() == KeyCode.ENTER) {
 
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
+                        articulateObjName(listObjectsInRoom.get(tempI).getName());
                         updateItems();
                     }
                 }
@@ -601,6 +613,7 @@ public class AdventureGameView {
                     System.out.println("asdfasdf");
                     //if user left-clicks, take the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
+                        articulateObjName(listObjectsInRoom.get(tempI).getName());
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
                         updateItems();
                     }
@@ -805,10 +818,22 @@ public class AdventureGameView {
     public void addRestartEvent() {
         restartButton.setOnAction(e -> {
             gridPane.requestFocus();
+            stopArticulation();
             this.model.restart();
+            updateItems();
+            updateScene("");
+            updateTimer();
         });
     }
 
+
+    public void addExitEvent() {
+        exitButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            stopArticulation();
+            System.exit(0);
+        });
+    }
     /**
      * This method handles the event related to the
      * hint button.
@@ -840,6 +865,36 @@ public class AdventureGameView {
             gridPane.requestFocus();
             LoadView loadView = new LoadView(this);
         });
+    }
+
+    /**
+     * This method articulates Object Descriptions
+     */
+    public void articulateObjName(String objName) {
+
+        String musicFile;
+        String adventureName = this.model.getDirectoryName();
+
+        musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
+
+        String directoryPath = "./" + adventureName + "/sounds/";
+        String filePath = musicFile;
+
+        Path directory = Paths.get(directoryPath);
+        Path file = Paths.get(filePath);
+
+// Resolve the file path against the directory to get the absolute path
+        Path absoluteFilePath = directory.resolve(file);
+
+        if (Files.exists(absoluteFilePath) && Files.isRegularFile(absoluteFilePath)) {
+            stopArticulation();
+            Media sound = new Media(absoluteFilePath.toUri().toString());
+            mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.play();
+            mediaPlaying = true;
+        } else {
+            System.out.println("File not found or is not a regular file.");
+        }
     }
 
 
