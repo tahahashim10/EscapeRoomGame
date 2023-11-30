@@ -40,6 +40,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+//imports for the articulateObj method
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javafx.scene.media.MediaException;
 
 /**
  * Class AdventureGameView.
@@ -597,7 +602,7 @@ public class AdventureGameView {
                     if (e.getCode() == KeyCode.ENTER) {
 
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
-                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
+                        articulateObjName(listObjectsInRoom.get(tempI).getName());
                         updateItems();
                     }
                 }
@@ -608,7 +613,7 @@ public class AdventureGameView {
                     System.out.println("asdfasdf");
                     //if user left-clicks, take the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
-                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
+                        articulateObjName(listObjectsInRoom.get(tempI).getName());
                         model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
                         updateItems();
                     }
@@ -864,19 +869,31 @@ public class AdventureGameView {
     /**
      * This method articulates Object Descriptions
      */
-    public void articulateObjDescription(String objName) {
-        stopArticulation();
+    public void articulateObjName(String objName) {
+
         String musicFile;
         String adventureName = this.model.getDirectoryName();
 
-        musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3" ;
+        musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
 
-        Media sound = new Media(new File(musicFile).toURI().toString());
+        String directoryPath = "./" + adventureName + "/sounds/";
+        String filePath = musicFile;
 
-        mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
-        mediaPlaying = true;
+        Path directory = Paths.get(directoryPath);
+        Path file = Paths.get(filePath);
 
+// Resolve the file path against the directory to get the absolute path
+        Path absoluteFilePath = directory.resolve(file);
+
+        if (Files.exists(absoluteFilePath) && Files.isRegularFile(absoluteFilePath)) {
+            stopArticulation();
+            Media sound = new Media(absoluteFilePath.toUri().toString());
+            mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.play();
+            mediaPlaying = true;
+        } else {
+            System.out.println("File not found or is not a regular file.");
+        }
     }
 
 
