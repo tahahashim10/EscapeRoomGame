@@ -951,29 +951,17 @@ public class AdventureGameView {
      */
     public void articulateObjName(String objName) {
 
+        stopArticulation();
         String musicFile;
         String adventureName = this.model.getDirectoryName();
-
+        stopArticulation();
         musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
 
-        String directoryPath = "./" + adventureName + "/sounds/";
-        String filePath = musicFile;
 
-        Path directory = Paths.get(directoryPath);
-        Path file = Paths.get(filePath);
-
-// Resolve the file path against the directory to get the absolute path
-        Path absoluteFilePath = directory.resolve(file);
-
-        if (Files.exists(absoluteFilePath) && Files.isRegularFile(absoluteFilePath)) {
-            stopArticulation();
-            Media sound = new Media(absoluteFilePath.toUri().toString());
-            mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.play();
-            mediaPlaying = true;
-        } else {
-            System.out.println("File not found or is not a regular file.");
-        }
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+        mediaPlaying = true;
     }
 
     /**
