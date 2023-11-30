@@ -1,5 +1,6 @@
 package AdventureModel;
 
+
 import java.io.*;
 import java.util.*;
 
@@ -11,8 +12,14 @@ public class AdventureGame implements Serializable {
     private String helpText; //A variable to store the Help text of the game. This text is displayed when the user types "HELP" command.
     private final HashMap<Integer, Room> rooms; //A list of all the rooms in the game.
     private HashMap<String,String> synonyms = new HashMap<>(); //A HashMap to store synonyms of commands.
-    private final String[] actionVerbs = {"QUIT","INVENTORY","TAKE","DROP"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
+
+    // change the action Verbs to public so view controller can access the class************
+    public final String[] actionVerbs = {"QUIT","INVENTORY","TAKE","DROP"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
     public Player player; //The Player of the game.
+
+
+    // Declare a controller ************************
+    AdventureGameController gameController;
 
     /**
      * Adventure Game Constructor
@@ -22,6 +29,10 @@ public class AdventureGame implements Serializable {
      * @param name the name of the adventure
      */
     public AdventureGame(String name){
+        // Initialize the gameController
+        gameController = new AdventureGameController();
+
+
         this.synonyms = new HashMap<>();
         this.rooms = new HashMap<>();
         this.directoryName = "Games/" + name; //all games files are in the Games directory!
@@ -34,7 +45,7 @@ public class AdventureGame implements Serializable {
 
     /**
      * Save the current state of the game to a file
-     * 
+     *
      * @param file pointer to file to write to
      */
     public void saveModel(File file) {
@@ -137,49 +148,16 @@ public class AdventureGame implements Serializable {
      *
      * @param command String representation of the command.
      */
+
     public String interpretAction(String command){
+        return gameController.interpretActionController(command, this);
 
-        String[] inputArray = tokenize(command); //look up synonyms
-
-        PassageTable motionTable = this.player.getCurrentRoom().getMotionTable(); //where can we move?
-
-        if (motionTable.optionExists(inputArray[0])) {
-            if (!movePlayer(inputArray[0])) {
-                if (this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDestinationRoom() == 0)
-                    return "GAME OVER";
-                else return "FORCED";
-            } //something is up here! We are dead or we won.
-            return null;
-        } else if(Arrays.asList(this.actionVerbs).contains(inputArray[0])) {
-            if(inputArray[0].equals("QUIT")) { return "GAME OVER"; } //time to stop!
-            else if(inputArray[0].equals("INVENTORY") && this.player.getInventory().size() == 0) return "INVENTORY IS EMPTY";
-            else if(inputArray[0].equals("INVENTORY") && this.player.getInventory().size() > 0) return "THESE OBJECTS ARE IN YOUR INVENTORY:\n" + this.player.getInventory().toString();
-            else if(inputArray[0].equals("TAKE") && inputArray.length < 2) return "THE TAKE COMMAND REQUIRES AN OBJECT";
-            else if(inputArray[0].equals("DROP") && inputArray.length < 2) return "THE DROP COMMAND REQUIRES AN OBJECT";
-            else if(inputArray[0].equals("TAKE") && inputArray.length == 2) {
-                if(this.player.getCurrentRoom().checkIfObjectInRoom(inputArray[1])) {
-                    this.player.takeObject(inputArray[1]);
-                    return "YOU HAVE TAKEN:\n " + inputArray[1];
-                } else {
-                    return "THIS OBJECT IS NOT HERE:\n " + inputArray[1];
-                }
-            }
-            else if(inputArray[0].equals("DROP") && inputArray.length == 2) {
-                if(this.player.checkIfObjectInInventory(inputArray[1])) {
-                    this.player.dropObject(inputArray[1]);
-                    return "YOU HAVE DROPPED:\n " + inputArray[1];
-                } else {
-                    return "THIS OBJECT IS NOT IN YOUR INVENTORY:\n " + inputArray[1];
-                }
-            }
-        }
-        return "INVALID COMMAND.";
     }
 
     /**
      * getDirectoryName
      * __________________________
-     * Getter method for directory 
+     * Getter method for directory
      * @return directoryName
      */
     public String getDirectoryName() {
@@ -218,7 +196,7 @@ public class AdventureGame implements Serializable {
     /**
      * getSynonyms
      * __________________________
-     * Getter method for synonyms 
+     * Getter method for synonyms
      * @return map of key value pairs (synonym to command)
      */
     public HashMap<String, String> getSynonyms() {
@@ -237,3 +215,4 @@ public class AdventureGame implements Serializable {
 
 
 }
+

@@ -273,7 +273,7 @@ public class AdventureGameView {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-           // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
+            // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
             showInstructions();
@@ -727,3 +727,4 @@ public class AdventureGameView {
         }
     }
 }
+
