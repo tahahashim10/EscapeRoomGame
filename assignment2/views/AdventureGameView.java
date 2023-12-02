@@ -638,14 +638,27 @@ public class AdventureGameView {
                     }
                 }
             };
+
+            //FAUZAN'S USER STORY - CLUE(10)
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
-                    //if user left-clicks, take the object and update items
+                    // Fauzan's Clue User Story
                     if(e.getButton() == MouseButton.PRIMARY){
-                        articulateObjName(listObjectsInRoom.get(tempI).getName());
-                        model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
-                        updateItems();
+                        // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
+                        roomImageView.setImage(image);
+                        roomImageView.setFitHeight(400);
+                        roomImageView.setFitWidth(400);
+                        roomImageView.setPreserveRatio(true);
+
+                        // Get the description of the clicked clue (comment this section below if not needed)
+                        String objectDescription = listObjectsInRoom.get(tempI).getDescription();
+                        if (objectDescription != null && !objectDescription.isBlank()) {
+                            roomDescLabel.setText(objectDescription);
+                        }
+                        roomDescLabel.setFont(new Font("Arial", 18));
+                        roomDescLabel.setStyle("-fx-text-fill: white;");
+                        roomDescLabel.setWrapText(true);
                     }
                 }
             };
