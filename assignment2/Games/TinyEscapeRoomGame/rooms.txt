@@ -2,22 +2,34 @@
 Crime Room
 You are in a meticulously secured and well-lit crime room equipped with advanced forensic tools and evidence storage facilities serves as the controlled environment where investigators meticulously collect, analyze, and document crucial evidence in the pursuit of solving criminal cases.
 -----
-gtp
-NONE       1
+WEST       2
+UP         2
+NORTH      3
+IN         3
+SOUTH      4
+DOWN       4
 
 2
 Prison Room
 You are in a sparsely furnished prison room, its cold, concrete walls and narrow barred window underscoring its stark confinement, houses a simple bed, a small desk, and a metal toilet, creating an environment that reflects the restrictive nature of incarceration.
 -----
-pri
-NONE       1
+EAST       1
+WEST       3
+DOWN       3
 
 3
 Future Room
 You are in a futuristic room, characterized by seamless integration of smart technology, holographic displays, and sustainable design, features responsive ambient lighting, self-adjusting climate control, and interactive surfaces, creating an immersive and efficient living or working space in harmony with cutting-edge advancements.
 -----
-ti0
-NONE       1
+SOUTH      1
+WEST       5
+OUT        6/BIRD
+OUT        1
+NORTH     3
+XYZZY     2/BOOK
+XYZZY     1
+PLUGH     2/BOOK
+PLUGH     1
 
 4
 Zombie Room

@@ -1,6 +1,7 @@
 package AdventureModel;
 
 import AdventureModel.*;
+import javafx.scene.image.Image;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,6 +13,17 @@ public class AdventureGameController {
         this.model = game;
 
         String[] inputArray = model.tokenize(command); //look up synonyms
+        System.out.println(inputArray[0]);
+
+
+        // ADDED FOR PLAYMINIGAME(8)
+        if (inputArray[0].equals("PLAY")) {
+            /// ANGELA **************************************
+            return "PLAY";
+        }
+        else if (inputArray[0].equals("ANSWER")) {
+            return "ANSWER";
+        }
 
         PassageTable motionTable = this.model.player.getCurrentRoom().getMotionTable(); //where can we move?
 

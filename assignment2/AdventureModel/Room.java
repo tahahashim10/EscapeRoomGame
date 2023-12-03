@@ -11,6 +11,7 @@ import java.util.List;
 public class Room implements Serializable {
 
     private final String adventureName;
+
     /**
      * The number of the room.
      */
@@ -40,6 +41,7 @@ public class Room implements Serializable {
      * The list of objects in the room.
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
+    public ArrayList<AdventureObject> objectsInRoom2 = new ArrayList<AdventureObject>(); // clone
 
     /**
      * The list of the initial objects in the room.
@@ -120,6 +122,7 @@ public class Room implements Serializable {
      */
     public void addGameObject(AdventureObject object){
         this.objectsInRoom.add(object);
+        this.objectsInRoom2.add(object);
         if (objCounter <3) {
             if (!initObjects.contains(object)) {
                 this.initObjects.add(object);
