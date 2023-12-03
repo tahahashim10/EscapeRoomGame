@@ -51,7 +51,9 @@ public class prisonMiniGame implements MiniGame {
         // change println to label and display in GUI
         System.out.println("My Answer: " + answer.toUpperCase().strip() + " | " + answerList.get(currIndex).toUpperCase().strip());
 
+        // if user gets the answer correct
         if (answer.toUpperCase().strip().equals(answerList.get(currIndex).toUpperCase().strip())) {
+
             // Add the clue to the player's inventory
             ArrayList<AdventureObject> listObjectsInRoom = player.getCurrentRoom().objectsInRoom;
             player.addToInventory(listObjectsInRoom.get(currIndex));
@@ -64,7 +66,6 @@ public class prisonMiniGame implements MiniGame {
         // IF ANSWER IS WRONG
         else {
             System.out.println("INCORRECT, try again...");
-            currIndex--;
             return false;
         }
     }

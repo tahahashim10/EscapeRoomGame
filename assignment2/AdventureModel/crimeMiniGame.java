@@ -60,45 +60,45 @@ public class crimeMiniGame implements MiniGame {
      * @return true if player wins the game, else false
      */
     @Override
-    public boolean playGame(Player player, String answer, int index) {
+    public boolean playGame(Player player, String answer, int currIdx) {
         giveInstructions();
-        index = this.currIndex;
+
         // Show user answer and correct answer in terminal
-        System.out.println(answer.toUpperCase().strip() + " | " + answerList.get(index).toUpperCase().strip());
+        System.out.println(answer.toUpperCase().strip() + " | " + answerList.get(currIdx).toUpperCase().strip());
 
         // IF ANSWER IS CORRECT
-        if (answer.toUpperCase().strip().equals(answerList.get(index).toUpperCase().strip())) {
+        if (answer.toUpperCase().strip().equals(answerList.get(currIdx).toUpperCase().strip())) {
 
-            if (index < 0 || index >= player.getCurrentRoom().objectsInRoom.size()) {
-                index = player.getCurrentRoom().objectsInRoom.size() - 1;
+            if (currIdx < 0 || currIdx >= player.getCurrentRoom().objectsInRoom.size()) {
+                currIdx = player.getCurrentRoom().objectsInRoom.size() - 1;
                 // Handle the invalid index case
                 System.out.println("CurrIdx exceeds Objects in Room.");
             }
             boolean firstAnsCorrect = false;
 
-            if (player.getCurrentRoom().objectsInRoom.get(index).getName().equals("CrimeObject1")) {
+            if (player.getCurrentRoom().objectsInRoom.get(currIdx).getName().equals("CrimeObject1")) {
                 System.out.println("1st case");
-                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(index));
-                player.getCurrentRoom().objectsInRoom.remove(index);
-                index--;
+                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(currIdx));
+                player.getCurrentRoom().objectsInRoom.remove(currIdx);
+                currIdx--;
                 return true;
             }
-            if (player.getCurrentRoom().objectsInRoom.get(index).getName().equals("CrimeObject2")) {
+            if (player.getCurrentRoom().objectsInRoom.get(currIdx).getName().equals("CrimeObject2")) {
                 System.out.println("2nd case");
-                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(index));
-                player.getCurrentRoom().objectsInRoom.remove(index);
+                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(currIdx));
+                player.getCurrentRoom().objectsInRoom.remove(currIdx);
                 return true;
             }
-            if (player.getCurrentRoom().objectsInRoom.get(index).getName().equals("CrimeObject3")) {
+            if (player.getCurrentRoom().objectsInRoom.get(currIdx).getName().equals("CrimeObject3")) {
                 System.out.println("3rd case");
-                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(index));
-                player.getCurrentRoom().objectsInRoom.remove(index);
+                player.addToInventory(player.getCurrentRoom().objectsInRoom.get(currIdx));
+                player.getCurrentRoom().objectsInRoom.remove(currIdx);
                 return true;
             }
-            if (firstAnsCorrect && index==0) {
+            if (firstAnsCorrect && currIdx==0) {
                 player.addToInventory((player.getCurrentRoom().objectsInRoom2.get(0)));
                 player.getCurrentRoom().objectsInRoom.remove(0);
-                index--;
+                currIdx--;
                 return true;
             }
             this.currIndex += 1;
@@ -107,7 +107,7 @@ public class crimeMiniGame implements MiniGame {
         // IF ANSWER IS WRONG
         else {
             System.out.println("INCORRECT, try again...");
-            index--;
+            currIdx--;
             return false;
         }
     }

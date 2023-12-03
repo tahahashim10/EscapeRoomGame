@@ -496,6 +496,7 @@ public class AdventureGameView {
                     updateScene(this.returnMini().getQuestionList().get(indexToUse).toString()); // display the question on screen
                     //replace the image of the room with the clue image (so it matches the question being displayed)
                     System.out.println(this.returnMini().getClueName(indexToUse));
+
                     String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.returnMini().getClueName(indexToUse) + ".jpg";
                     Image clueImage = new Image(imagePath);
                     roomImageView.setImage(clueImage);
