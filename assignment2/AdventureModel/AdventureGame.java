@@ -14,11 +14,11 @@ public class AdventureGame implements Serializable {
     public final String[] actionVerbs = {"QUIT","INVENTORY", "VIEW", "PASSWORD"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
     public Player player; //The Player of the game.
     private String hintText; //A variable to store the hint text of the game. This text is displayed when the user types "HINT" command.
-    private int totalClues;
+    private int totalClues; //A variable to store total number of clues
 
-    public static AdventureGame game;
+    public static AdventureGame game; // Singleton instance of the AdventureGame.
 
-    AdventureGameController gameController;
+    AdventureGameController gameController; // The controller for managing game interactions.
 
     /**
      * Adventure Game Constructor
@@ -42,10 +42,23 @@ public class AdventureGame implements Serializable {
 
     }
 
+    /**
+     * Get Game Singleton Instance
+     * __________________________
+     *
+     * Retrieves the singleton instance of the AdventureGame. If the instance does not exist,
+     * a new AdventureGame instance with the specified adventure name is created.
+     *
+     * @return the singleton instance of AdventureGame.
+     */
     public static AdventureGame getGame() {
-        if (AdventureGame.game == null){
+        // Check if the game instance does not exist
+        if (AdventureGame.game == null) {
+            // Create a new AdventureGame instance with the specified adventure name
             game = new AdventureGame("TinyEscapeRoomGame");
         }
+
+        // Return the singleton instance of AdventureGame
         return game;
     }
 
@@ -206,6 +219,7 @@ public class AdventureGame implements Serializable {
      * getPlayer
      * __________________________
      * Getter method for Player
+     * @return player
      */
     public Player getPlayer() {
         return this.player;

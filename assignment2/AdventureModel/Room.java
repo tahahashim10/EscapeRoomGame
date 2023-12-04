@@ -10,6 +10,9 @@ import java.util.List;
  */
 public class Room implements Serializable {
 
+    /**
+     * The adventure name.
+     */
     private final String adventureName;
     /**
      * The number of the room.
@@ -151,13 +154,6 @@ public class Room implements Serializable {
     }
 
     /**
-     * Sets the visit status of the room to true.
-     */
-    public void visit(){
-        isVisited = true;
-    }
-
-    /**
      * Getter for returning an AdventureObject with a given name
      *
      * @param objectName: Object name to find in the room
@@ -178,9 +174,22 @@ public class Room implements Serializable {
         this.objCounter = 0;
     }
 
+    /**
+     * Delete Object
+     * __________________________
+     *
+     * Removes an object from the list of objects in the room based on the object's name.
+     *
+     * @param objectName the name of the object to be deleted.
+     */
     public void deleteObject(String objectName) {
-        for(int i = 0; i<objectsInRoom.size();i++){
-            if(this.objectsInRoom.get(i).getName().equals(objectName)) this.objectsInRoom.remove(this.objectsInRoom.get(i));
+        // Iterate through the list of objects in the room
+        for (int i = 0; i < objectsInRoom.size(); i++) {
+            // Check if the current object's name matches the specified objectName
+            if (this.objectsInRoom.get(i).getName().equals(objectName)) {
+                // Remove the matching object from the list
+                this.objectsInRoom.remove(this.objectsInRoom.get(i));
+            }
         }
     }
 
