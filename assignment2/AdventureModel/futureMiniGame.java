@@ -7,8 +7,8 @@ public class futureMiniGame implements MiniGame {
     private final ArrayList<String> cluesList;
     private final ArrayList<AdventureObject> objects;
     private int currIndex;
-    public ArrayList<String> questionList;
-    ArrayList<String> answerList;
+    private ArrayList<String> questionList;
+    private ArrayList<String> answerList;
 
 
     public futureMiniGame(Player player) {
@@ -58,12 +58,17 @@ public class futureMiniGame implements MiniGame {
     public boolean playGame(Player player, String answer, int index) {
         if (answer.toUpperCase().strip().equals(answerList.get(index).toUpperCase().strip())) {
             player.addToInventory(objects.get(index));
+            System.out.println(objects.get(index).getName());
             player.getCurrentRoom().deleteObject(objects.get(index).getName());
+            System.out.println(player.getInventory());
             this.currIndex += 1;
             return true;
         } else {
             return false;
         }
+
+
+
     }
 
     /**

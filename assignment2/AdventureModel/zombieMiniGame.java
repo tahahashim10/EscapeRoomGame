@@ -6,11 +6,10 @@ import java.util.List;
 public class zombieMiniGame implements MiniGame {
 
     private final ArrayList<String> cluesList;
-
     private final ArrayList<AdventureObject> objects;
     private int currIndex;
-    public ArrayList<String> questionList;
-    ArrayList<String> answerList;
+    private ArrayList<String> questionList;
+    private ArrayList<String> answerList;
 
     public zombieMiniGame(Player player) {
 

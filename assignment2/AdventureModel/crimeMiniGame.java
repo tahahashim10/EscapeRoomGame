@@ -5,8 +5,8 @@ public class crimeMiniGame implements MiniGame {
     private final ArrayList<String> cluesList;
     private final ArrayList<AdventureObject> objects;
     private int currIndex;
-    public ArrayList<String> questionList;
-    ArrayList<String> answerList;
+    private ArrayList<String> questionList;
+    private ArrayList<String> answerList;
 
     public crimeMiniGame(Player player) {
         this.questionList = new ArrayList<String>(List.of(

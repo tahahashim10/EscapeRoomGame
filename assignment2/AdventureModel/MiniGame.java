@@ -3,11 +3,11 @@ import java.util.ArrayList;
 
 
 public interface MiniGame {
-    boolean playGame(Player player, String answer, int currIndex);
-    ArrayList getQuestionList();
-    ArrayList getAnswerList();
+    public boolean playGame(Player player, String answer, int currIndex);
+    public ArrayList getQuestionList();
+    public ArrayList getAnswerList();
 
-    String getClueName(int currIdx);
+    public String getClueName(int currIdx);
 }
 
 
