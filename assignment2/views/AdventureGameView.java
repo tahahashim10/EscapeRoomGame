@@ -107,7 +107,7 @@ public class AdventureGameView {
      * - Room 1: Crime Game
      * - Room 2: Prison Game
      * - Room 3: Future Game
-     * - Other Rooms: Zombie Game
+     * - Room 4, other room: Zombie Game
      *
      * Requires a valid 'model' with a set 'player' and room.
      */
@@ -133,10 +133,16 @@ public class AdventureGameView {
 
     }
 
+      /**
+     * Returns the current MiniGame associated with the current game view
+     * 
+     * @return The current MiniGame instance.
+     */
 
     public MiniGame returnCurrMiniGame(){
         return this.currGame;
     }
+    
 
     /**
      * Private instance variable to manage the timer.
