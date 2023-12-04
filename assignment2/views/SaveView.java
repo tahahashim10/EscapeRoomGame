@@ -1,5 +1,4 @@
 
-///saveView
 package views;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -63,6 +62,9 @@ public class SaveView {
 
         saveGameButton = new Button("Save board");
         saveGameButton.setId("SaveBoardButton"); // DO NOT MODIFY ID
+
+        // high contrast color #0A111D with other text with color #FFFFFF
+        // when button is hover, the fonts of the button get smaller, creating a UI effect
         saveGameButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         saveGameButton.setPrefSize(200, 50);
         saveGameButton.setFont(new Font(16));
