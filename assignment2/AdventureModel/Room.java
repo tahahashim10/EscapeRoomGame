@@ -165,7 +165,13 @@ public class Room implements Serializable {
         }
         return null;
     }
-
+    /**
+     * Resets the room
+     * __________________________
+     *
+     * This method clears the objects in the room and sets the visited attribute to false.
+     *
+     * */
     public void reset() {
         // set the room as not visited and make sure it has all its objects
         this.isVisited = false;
