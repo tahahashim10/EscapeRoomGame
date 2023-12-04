@@ -71,12 +71,17 @@ public class AdventureGameView {
 
     public futureMiniGame futureGame;
     public zombieMiniGame zombieGame;
+
+
+    // current MiniGame
+    public MiniGame currGame;
     public int currQuestionIndex = 0;
 
     /**
      * Adventure Game View Constructor
      * __________________________
      * Initializes attributes
+     *
      * @param model: The model of the adventure game.
      * @param stage: The stage of the adventure game.
      */
@@ -88,8 +93,39 @@ public class AdventureGameView {
         prisonGame = new prisonMiniGame(this.model.player);
         futureGame = new futureMiniGame(this.model.player);
         zombieGame = new zombieMiniGame(this.model.player);
-
+        startMiniGame();
         intiUI();
+    }
+
+    /**
+     * Sets 'currGame' based on the player's current room number:
+     * - Room 1: Crime Game
+     * - Room 2: Prison Game
+     * - Room 3: Future Game
+     * - Other Rooms: Zombie Game
+     *
+     * Requires a valid 'model' with a set 'player' and room.
+     */
+    public void setMiniGame() {
+        if (this.model.player.getCurrentRoom().getRoomNumber() == 1) {
+            this.currGame = crimeGame;
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
+            this.currGame = prisonGame;
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
+            this.currGame = futureGame;
+        } else {
+            this.currGame = zombieGame;
+        }
+    }
+
+    /**
+     * Initiates a mini-game by setting the 'currGame' property based on the player's
+     * current room number. Ensure the 'model' property is initialized with a valid
+     * game model, and the 'player' property has a valid current room set.
+     */
+    public void startMiniGame(){
+        setMiniGame();
+
     }
 
     /**
@@ -159,6 +195,9 @@ public class AdventureGameView {
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
     }
+
+
+
 
     /**
      * Initialize the UI
@@ -384,6 +423,9 @@ public class AdventureGameView {
      */
     private void submitEvent(String text) {
 
+        // starting the game based on the context/ room that the player is in
+        startMiniGame();
+
         text = text.strip(); //get rid of white space
         stopArticulation(); //if speaking, stop
 
@@ -487,11 +529,11 @@ public class AdventureGameView {
                 int indexToUse = currQuestionIndex; // Use clue_left instead of 3
 
                 // check if it is within bounds
-                if (indexToUse < this.returnMini().getQuestionList().size()) {
-                    updateScene(this.returnMini().getQuestionList().get(indexToUse).toString());
+                if (indexToUse < this.currGame.getQuestionList().size()) {
+                    updateScene(this.currGame.getQuestionList().get(indexToUse).toString());
 
                     // replace the image of the room with the clue image
-                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.returnMini().getClueName(indexToUse) + ".jpg";
+                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.currGame.getClueName(indexToUse) + ".jpg";
                     Image clueImage = new Image(imagePath);
                     roomImageView.setImage(clueImage);
                     roomImageView.setFitHeight(400);
@@ -501,14 +543,14 @@ public class AdventureGameView {
             }
         }
 
-            // once the user can see the question, the next output will be this
+        // once the user can see the question, the next output will be this
         else if (output.startsWith("ANSWER")) {
             output = text.strip().substring(6);
 
             int indexToUse = currQuestionIndex % 3;
 
             // If the answer is correct (also Use indexToUse when calling playGame)
-            if (this.returnMini().playGame(this.model.player, output, indexToUse)) {
+            if (this.currGame.playGame(this.model.player, output, indexToUse)) {
                 updateScene("Correct Answer! The clue is now added to your inventory");
                 updateItems();
                 currQuestionIndex++; // increment so the same question is not shown
@@ -516,22 +558,8 @@ public class AdventureGameView {
                 updateScene("Incorrect... enter PLAY to answer the next available clue in the room. ");
             }
         }
-}
-
-    // return the correct miniGame according to roomNumber
-    public MiniGame returnMini(){
-        if (this.model.player.getCurrentRoom().getRoomNumber() == 1){
-            return crimeGame;
-        }
-        else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
-            return prisonGame;
-        }
-        else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
-            return futureGame;
-        }
-        return zombieGame;
-
     }
+
 
     /**
      * showCommands
