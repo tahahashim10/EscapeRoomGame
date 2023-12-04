@@ -5,10 +5,11 @@ import java.util.List;
 
 public class prisonMiniGame implements MiniGame {
     private final ArrayList<String> cluesList;
+
     private final ArrayList<AdventureObject> objects;
     private int currIndex;
-    private ArrayList<String> questionList;
-    private ArrayList<String> answerList;
+    public ArrayList<String> questionList;
+    ArrayList<String> answerList;
 
     public prisonMiniGame(Player player) {
         this.questionList = new ArrayList<String>(List.of(

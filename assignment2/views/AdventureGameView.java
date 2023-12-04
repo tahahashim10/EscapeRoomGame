@@ -71,17 +71,12 @@ public class AdventureGameView {
 
     public futureMiniGame futureGame;
     public zombieMiniGame zombieGame;
-
-
-    // current MiniGame
-    private MiniGame currGame;
     public int currQuestionIndex = 0;
 
     /**
      * Adventure Game View Constructor
      * __________________________
      * Initializes attributes
-     *
      * @param model: The model of the adventure game.
      * @param stage: The stage of the adventure game.
      */
@@ -93,54 +88,12 @@ public class AdventureGameView {
         prisonGame = new prisonMiniGame(this.model.player);
         futureGame = new futureMiniGame(this.model.player);
         zombieGame = new zombieMiniGame(this.model.player);
-        startMiniGame();
+
         intiUI();
     }
 
     /**
-     * Sets 'currGame' based on the player's current room number:
-     * - Room 1: Crime Game
-     * - Room 2: Prison Game
-     * - Room 3: Future Game
-     * - Other Rooms: Zombie Game
-     *
-     * Requires a valid 'model' with a set 'player' and room.
-     */
-    public void setMiniGame() {
-        if (this.model.player.getCurrentRoom().getRoomNumber() == 1) {
-            this.currGame = crimeGame;
-        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
-            this.currGame = prisonGame;
-        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
-            this.currGame = futureGame;
-        } else {
-            this.currGame = zombieGame;
-        }
-    }
-
-    /**
-     * Initiates a mini-game by setting the 'currGame' property based on the player's
-     * current room number. Ensure the 'model' property is initialized with a valid
-     * game model, and the 'player' property has a valid current room set.
-     */
-    public void startMiniGame(){
-        setMiniGame();
-
-    }
-
-
-    public MiniGame returnCurrMiniGame(){
-        return this.currGame;
-    }
-
-
-
-
-
-
-
-    /**
-     * Private instance variable to manage the timer using.
+     * Private instance variable to manage the timer.
      *
      * The timer updates every second.
      */
@@ -156,18 +109,25 @@ public class AdventureGameView {
     /**
      * Updates the timer.
      *
-     * Calls announceRemainingTime function when 5 minutes pass to play audio of the time remaining.
+     * Every minute it calls the playAudioTime function to play the audio that a minute has passed
      */
-    private void updateTimer(){
+    private void updateTimer() {
+        // Calculate minutes and seconds from the total timer seconds
         int minutes = timerSeconds / 60;
         int seconds = timerSeconds % 60;
+
+        // Update the timer label with the formatted time remaining
         timerLabel.setText("Time Remaining: " + String.format("%02d:%02d", minutes, seconds));
 
+        // Decrease the timer seconds
         timerSeconds--;
 
+        // Check if the timer has reached zero
         if (timerSeconds < 0) {
             stopArticulation();
             timer.stop();
+
+            // Display "Game Over" label with special styling
             Label gameOverLabel = new Label("Game Over");
             VBox vBox = new VBox();
             vBox.setSpacing(10);
@@ -176,13 +136,15 @@ public class AdventureGameView {
             vBox.getChildren().add(gameOverLabel);
             gridPane.add(vBox, 1, 1, 1, 1);
             gameOverLabel.setStyle("-fx-text-fill: red; -fx-font-size: 115; -fx-rotate: 15;");
+
+            // Set up a pause transition to exit the application after 10 seconds
             PauseTransition pause = new PauseTransition(Duration.seconds(10));
             pause.setOnFinished(event -> {
                 Platform.exit();
             });
             pause.play();
-
-        } else if (timerSeconds % 60 == 0) { // Check if 1 minute have passed
+        } else if (timerSeconds % 60 == 0) {
+            // Check if 1 minute has passed and play audio
             playAudioTime(1);
         }
     }
@@ -193,8 +155,13 @@ public class AdventureGameView {
      * @param minutes: The remaining minutes in the timer.
      */
     private void playAudioTime(int minutes) {
+        // Construct the file path for the audio file based on remaining minutes
         String audiofile = "./" + this.model.getDirectoryName() + "/sounds/" + minutes + "audiotime.mp3";
+
+        // Create a Media object from the audio file
         Media sound = new Media(new File(audiofile).toURI().toString());
+
+        // Create a MediaPlayer and play the audio
         MediaPlayer audioPlayer = new MediaPlayer(sound);
         audioPlayer.play();
     }
@@ -203,12 +170,10 @@ public class AdventureGameView {
      * Configures and starts the game timer.
      */
     private void startTimer() {
+        // Set the cycle count of the timer to INDEFINITE and start the timer
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
     }
-
-
-
 
     /**
      * Initialize the UI
@@ -254,6 +219,7 @@ public class AdventureGameView {
 
 
         // Buttons
+        // Configuring buttons with their styles and accessibility information
         saveButton = new Button("Save");
         saveButton.setId("Save");
         customizeButton(saveButton, 100, 50);
@@ -290,12 +256,14 @@ public class AdventureGameView {
         makeButtonAccessible(exitButton, "Exit Button", "Exit the game", "Click to exit the game.");
         addExitEvent();
 
+        // Creating an HBox to hold the top buttons
         HBox topButtons = new HBox();
         topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton, hintButton, exitButton);
         topButtons.setSpacing(10);
         topButtons.setAlignment(Pos.CENTER);
 
 
+        // Configuring and adding inputTextField
         inputTextField = new TextField();
         inputTextField.setFont(new Font("Arial", 16));
         inputTextField.setFocusTraversable(true);
@@ -346,16 +314,16 @@ public class AdventureGameView {
         this.stage.setResizable(false);
         this.stage.show();
 
-        //TODO: Phase 2 Taha Timer User Story
+        // Styling and positioning the timer label
         timerLabel.setStyle("-fx-text-fill: red;");
         timerLabel.setFont(new Font("Arial", 16));
         gridPane.add(timerLabel, 1, 0, 1, 1); // Align to the top
         GridPane.setMargin(timerLabel, new Insets(-45, 100, 50, 250));
 
-        //TODO: Phase 2 Taha Timer User Story
+        // Starting the game timer
         startTimer();
-    }
 
+    }
 
     /**
      * makeButtonAccessible
@@ -433,9 +401,6 @@ public class AdventureGameView {
      * @param text the command that needs to be processed
      */
     private void submitEvent(String text) {
-
-        // starting the game based on the context/ room that the player is in
-        startMiniGame();
 
         text = text.strip(); //get rid of white space
         stopArticulation(); //if speaking, stop
@@ -534,21 +499,17 @@ public class AdventureGameView {
         // FAUZAN'S USER STORY [PlayMiniGame(8)]
         else if (output.equals("PLAY")) {
             int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
-
-            //play the object audio when the Player enter PLAY
-            articulateObjName(returnCurrMiniGame().getClueName(currQuestionIndex));
-
             if (clue_left == 0) {
                 updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
             } else {
                 int indexToUse = currQuestionIndex; // Use clue_left instead of 3
 
                 // check if it is within bounds
-                if (indexToUse < returnCurrMiniGame().getQuestionList().size()) {
-                    updateScene(returnCurrMiniGame().getQuestionList().get(indexToUse).toString());
+                if (indexToUse < this.returnMini().getQuestionList().size()) {
+                    updateScene(this.returnMini().getQuestionList().get(indexToUse).toString());
 
                     // replace the image of the room with the clue image
-                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + returnCurrMiniGame().getClueName(indexToUse) + ".jpg";
+                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.returnMini().getClueName(indexToUse) + ".jpg";
                     Image clueImage = new Image(imagePath);
                     roomImageView.setImage(clueImage);
                     roomImageView.setFitHeight(400);
@@ -558,14 +519,14 @@ public class AdventureGameView {
             }
         }
 
-        // once the user can see the question, the next output will be this
+            // once the user can see the question, the next output will be this
         else if (output.startsWith("ANSWER")) {
             output = text.strip().substring(6);
 
             int indexToUse = currQuestionIndex % 3;
 
             // If the answer is correct (also Use indexToUse when calling playGame)
-            if (returnCurrMiniGame().playGame(this.model.player, output, indexToUse)) {
+            if (this.returnMini().playGame(this.model.player, output, indexToUse)) {
                 updateScene("Correct Answer! The clue is now added to your inventory");
                 updateItems();
                 currQuestionIndex++; // increment so the same question is not shown
@@ -573,8 +534,22 @@ public class AdventureGameView {
                 updateScene("Incorrect... enter PLAY to answer the next available clue in the room. ");
             }
         }
-    }
+}
 
+    // return the correct miniGame according to roomNumber
+    public MiniGame returnMini(){
+        if (this.model.player.getCurrentRoom().getRoomNumber() == 1){
+            return crimeGame;
+        }
+        else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
+            return prisonGame;
+        }
+        else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
+            return futureGame;
+        }
+        return zombieGame;
+
+    }
 
     /**
      * showCommands
@@ -625,7 +600,7 @@ public class AdventureGameView {
     }
 
     /**
-     * formatText
+     * Format Text
      * __________________________
      *
      * Format text for display.
@@ -633,13 +608,23 @@ public class AdventureGameView {
      * @param textToDisplay the text to be formatted for display.
      */
     private void formatText(String textToDisplay) {
+        // Check if the text to display is null or empty
         if (textToDisplay == null || textToDisplay.isBlank()) {
+            // If empty, construct a formatted string using room description and objects in the room
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription() + "\n";
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
-            if (objectString != null && !objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-            else roomDescLabel.setText(roomDesc);
+
+            // Update roomDescLabel with formatted text including room description and objects
+            if (objectString != null && !objectString.isEmpty())
+                roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
+            else
+                roomDescLabel.setText(roomDesc);
+        } else {
+            // If text to display is not empty, directly set it to roomDescLabel
+            roomDescLabel.setText(textToDisplay);
         }
-        else roomDescLabel.setText(textToDisplay);
+
+        // Style the roomDescLabel for consistent appearance
         roomDescLabel.setStyle("-fx-text-fill: white;");
         roomDescLabel.setFont(new Font("Arial", 16));
         roomDescLabel.setAlignment(Pos.CENTER);
@@ -655,7 +640,7 @@ public class AdventureGameView {
     private void getRoomImage() {
 
         int roomNumber = this.model.getPlayer().getCurrentRoom().getRoomNumber();
-        String roomImage = this.model.getDirectoryName() + "/room-images2/" + roomNumber + ".jpg";
+        String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".jpg";
 
         Image roomImageFile = new Image(roomImage);
         roomImageView = new ImageView(roomImageFile);
@@ -846,7 +831,6 @@ public class AdventureGameView {
 
             //register the handlers
             button2.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
-//            button2.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
             //add the button to the objects in inventory
             objectsInInventory.getChildren().add(button2);
         }
@@ -946,13 +930,26 @@ public class AdventureGameView {
         }
     }
 
+    /**
+     * Display Hint
+     * __________________________
+     *
+     * Displays a hint to the user based on certain conditions.
+     * If the player has collected all clues, an alert with the hint is shown.
+     * The voice articulation is stopped when the alert is closed.
+     */
     private void displayHint() {
 
-        if(this.model.getPlayer().getInventory().size() == this.model.getTotalClues()){
+        // Check if the player has collected all clues
+        if (this.model.getPlayer().getInventory().size() == this.model.getTotalClues()) {
+
+            // Initiate voice articulation for the hint
             articulateHint();
+
             // Retrieve the hint from your model or any relevant source
             String hint = model.getHint();
-            // Display the hint to the user (you can use a dialog, label, or any other UI element)
+
+            // Display the hint to the user using an alert
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Hint");
             alert.setHeaderText(null);
@@ -964,21 +961,33 @@ public class AdventureGameView {
                 return null;
             });
 
+            // Show the alert and wait for user interaction
             alert.showAndWait();
         }
     }
 
 
+    /**
+     * Articulate Hint
+     * __________________________
+     *
+     * Initiates voice articulation for the hint by playing an audio file.
+     * The audio file is retrieved from the adventure's sound directory.
+     * The media player is used to play the audio, and the mediaPlaying flag is set to true.
+     */
     private void articulateHint() {
-        String musicFile;
-        String adventureName = this.model.getDirectoryName();
 
-        musicFile = "./" + adventureName + "/sounds/" + "hint.mp3" ;
+        // Construct the file path for the hint audio file based on the adventure directory name
+        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + "hint.mp3";
 
+        // Create a Media object from the hint audio file
         Media sound = new Media(new File(musicFile).toURI().toString());
 
+        // Create a MediaPlayer and play the audio
         mediaPlayer = new MediaPlayer(sound);
         mediaPlayer.play();
+
+        // Set the mediaPlaying flag to true
         mediaPlaying = true;
     }
 
@@ -1054,32 +1063,63 @@ public class AdventureGameView {
     }
 
     /**
-     * This method articulates Room Descriptions
+     * Articulate Room Description
+     * __________________________
+     *
+     * Initiates voice articulation for room descriptions based on certain conditions.
+     * If the room has not been visited, a longer audio file is played; otherwise, a shorter one.
+     * The audio file is retrieved from the adventure's sound directory using the room name.
+     * The media player is used to play the audio, and the mediaPlaying flag is set to true.
      */
     public void articulateRoomDescription() {
-        String musicFile;
+
+        // Retrieve necessary information for audio file selection
         String adventureName = this.model.getDirectoryName();
         String roomName = this.model.getPlayer().getCurrentRoom().getRoomName();
 
-        if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
-        else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
-        musicFile = musicFile.replace(" ","-");
+        // Determine the appropriate audio file based on whether the room has been visited
+        String musicFile;
+        if (!this.model.getPlayer().getCurrentRoom().getVisited()) {
+            musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3";
+        } else {
+            musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3";
+        }
 
+        // Replace spaces with hyphens in the file path
+        musicFile = musicFile.replace(" ", "-");
+
+        // Create a Media object from the selected audio file
         Media sound = new Media(new File(musicFile).toURI().toString());
 
+        // Create a MediaPlayer and play the audio
         mediaPlayer = new MediaPlayer(sound);
         mediaPlayer.play();
+
+        // Set the mediaPlaying flag to true
         mediaPlaying = true;
     }
 
     /**
-     * This method articulates victory room descriptions
+     * Articulate Victory
+     * __________________________
+     *
+     * Initiates voice articulation for victory room descriptions.
+     *
+     * @param file the name of the audio file to play for the victory description.
      */
     public void articulateVictory(String file) {
-        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + file + ".mp3" ;
+
+        // Construct the file path for the victory audio file based on the adventure directory name and provided file name
+        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + file + ".mp3";
+
+        // Create a Media object from the victory audio file
         Media sound = new Media(new File(musicFile).toURI().toString());
+
+        // Create a MediaPlayer and play the audio
         mediaPlayer = new MediaPlayer(sound);
         mediaPlayer.play();
+
+        // Set the mediaPlaying flag to true
         mediaPlaying = true;
     }
 

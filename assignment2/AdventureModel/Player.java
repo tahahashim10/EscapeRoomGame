@@ -61,22 +61,6 @@ public class Player implements Serializable {
         return false;
     }
 
-
-    /**
-     * This method drops an object in the players inventory and adds it to the room.
-     * If the object is not in the inventory, the method does nothing.
-     *
-     * @param s name of the object to drop
-     */
-    public void dropObject(String s) {
-        for(int i = 0; i<this.inventory.size();i++){
-            if(this.inventory.get(i).getName().equals(s)) {
-//                this.currentRoom.addGameObject(this.inventory.get(i)); (user cannot drop object in another room)
-                this.inventory.remove(i);
-            }
-        }
-    }
-
     /**
      * Get an object from the player's inventory by its name.
      *

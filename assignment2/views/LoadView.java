@@ -37,6 +37,7 @@ public class LoadView {
      * @param adventureGameView: The main AdventureGameView object.
      */
     public LoadView(AdventureGameView adventureGameView){
+        //test comment
         //note that the buttons in this view are not accessible!!
         this.adventureGameView = adventureGameView;
         selectGameLabel = new Label(String.format(""));
@@ -60,9 +61,6 @@ public class LoadView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-
-        // high contrast color #0A111D with the with white text
-        // when button is hover, the fonts of the button get smaller, creating a UI effect
         closeWindowButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
@@ -85,9 +83,6 @@ public class LoadView {
         GameList.setStyle("-fx-text-fill: #CBC3E3");
         selectGameLabel.setStyle("-fx-text-fill: #e8e6e3");
         selectGameLabel.setFont(new Font(16));
-
-        // high contrast color #0A111D with the selectGameLabel color #FFFFFF
-        // when button is hover, the fonts of the button get smaller, creating a UI effect
         selectGameButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         selectGameButton.setPrefSize(200, 50);
         selectGameButton.setFont(new Font(16));
