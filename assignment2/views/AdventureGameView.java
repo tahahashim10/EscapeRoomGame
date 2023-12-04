@@ -74,7 +74,7 @@ public class AdventureGameView {
 
 
     // current MiniGame
-    public MiniGame currGame;
+    private MiniGame currGame;
     public int currQuestionIndex = 0;
 
     /**
@@ -127,6 +127,17 @@ public class AdventureGameView {
         setMiniGame();
 
     }
+
+
+    public MiniGame returnCurrMiniGame(){
+        return this.currGame;
+    }
+
+
+
+
+
+
 
     /**
      * Private instance variable to manage the timer using.
@@ -523,17 +534,21 @@ public class AdventureGameView {
         // FAUZAN'S USER STORY [PlayMiniGame(8)]
         else if (output.equals("PLAY")) {
             int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
+
+            //play the object audio when the Player enter PLAY
+            articulateObjName(returnCurrMiniGame().getClueName(currQuestionIndex));
+
             if (clue_left == 0) {
                 updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
             } else {
                 int indexToUse = currQuestionIndex; // Use clue_left instead of 3
 
                 // check if it is within bounds
-                if (indexToUse < this.currGame.getQuestionList().size()) {
-                    updateScene(this.currGame.getQuestionList().get(indexToUse).toString());
+                if (indexToUse < returnCurrMiniGame().getQuestionList().size()) {
+                    updateScene(returnCurrMiniGame().getQuestionList().get(indexToUse).toString());
 
                     // replace the image of the room with the clue image
-                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.currGame.getClueName(indexToUse) + ".jpg";
+                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + returnCurrMiniGame().getClueName(indexToUse) + ".jpg";
                     Image clueImage = new Image(imagePath);
                     roomImageView.setImage(clueImage);
                     roomImageView.setFitHeight(400);
@@ -550,7 +565,7 @@ public class AdventureGameView {
             int indexToUse = currQuestionIndex % 3;
 
             // If the answer is correct (also Use indexToUse when calling playGame)
-            if (this.currGame.playGame(this.model.player, output, indexToUse)) {
+            if (returnCurrMiniGame().playGame(this.model.player, output, indexToUse)) {
                 updateScene("Correct Answer! The clue is now added to your inventory");
                 updateItems();
                 currQuestionIndex++; // increment so the same question is not shown
@@ -640,7 +655,7 @@ public class AdventureGameView {
     private void getRoomImage() {
 
         int roomNumber = this.model.getPlayer().getCurrentRoom().getRoomNumber();
-        String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".jpg";
+        String roomImage = this.model.getDirectoryName() + "/room-images2/" + roomNumber + ".jpg";
 
         Image roomImageFile = new Image(roomImage);
         roomImageView = new ImageView(roomImageFile);
