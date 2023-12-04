@@ -16,7 +16,7 @@ NONE       1
 Future Room
 You are in a futuristic room, characterized by seamless integration of smart technology, holographic displays, and sustainable design, features responsive ambient lighting, self-adjusting climate control, and interactive surfaces, creating an immersive and efficient living or working space in harmony with cutting-edge advancements.
 -----
-ti0
+tis
 NONE       1
 
 4

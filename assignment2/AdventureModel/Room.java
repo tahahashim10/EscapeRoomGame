@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class contains the information about a 
+ * This class contains the information about a
  * room in the Adventure Game.
  */
 public class Room implements Serializable {
@@ -176,6 +176,12 @@ public class Room implements Serializable {
         objectsInRoom.clear();
         objectsInRoom.addAll(initObjects);
         this.objCounter = 0;
+    }
+
+    public void deleteObject(String objectName) {
+        for(int i = 0; i<objectsInRoom.size();i++){
+            if(this.objectsInRoom.get(i).getName().equals(objectName)) this.objectsInRoom.remove(this.objectsInRoom.get(i));
+        }
     }
 
     /**

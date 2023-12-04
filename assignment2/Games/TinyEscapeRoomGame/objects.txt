@@ -24,7 +24,7 @@ robert stroud
 2
 
 PrisonObject3
-Decode this room with this punishment. : ptwypzvutlua (using caesar cipher 7)
+Decode this room with this punishment: ptwypzvutlua (using caesar cipher 7)
 imprisonment
 2
 
@@ -39,12 +39,12 @@ inrgauiray
 3
 
 FutureObject3
-NASA's Perseverance Mars rover captured "Bettys Rock" on June 20, 2022. The rock is named after Bettys Rock in what national park? Answer: Shenandoah.
-01010011 01101000 01100101 01101110 01100001 01101110 01100100 01101111 01100001 01101000
+NASA's Perseverance Mars rover captured "Bettys Rock" on June 20, 2022. The rock is named after Bettys Rock in what national park?
+Shenandoah
 3
 
 ZombieObject1
- If the zombies move at a speed of 2.5 feet per second, and the survivors need to cross a room that is 13 feet wide, how many seconds do they have to safely cross before the zombies catch up?
+If the zombies move at a speed of 2.5 feet per second, and the survivors need to cross a room that is 13 feet wide, how many seconds do they have to safely cross before the zombies catch up?
 5.2
 4
 

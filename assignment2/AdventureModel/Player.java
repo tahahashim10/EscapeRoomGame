@@ -71,7 +71,7 @@ public class Player implements Serializable {
     public void dropObject(String s) {
         for(int i = 0; i<this.inventory.size();i++){
             if(this.inventory.get(i).getName().equals(s)) {
-                this.currentRoom.addGameObject(this.inventory.get(i));
+//                this.currentRoom.addGameObject(this.inventory.get(i)); (user cannot drop object in another room)
                 this.inventory.remove(i);
             }
         }
@@ -133,6 +133,4 @@ public class Player implements Serializable {
         }
         return objects;
     }
-
-
 }

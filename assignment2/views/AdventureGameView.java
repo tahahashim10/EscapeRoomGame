@@ -1,13 +1,8 @@
 package views;
 
-import AdventureModel.AdventureGame;
-import AdventureModel.AdventureObject;
-import AdventureModel.Passage;
-import AdventureModel.PassageTable;
+import AdventureModel.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -30,19 +25,14 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javafx.event.EventHandler;
 
 //TODO: Taha Phase 2 Timer User Story
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
 /**
  * Class AdventureGameView.
@@ -63,14 +53,25 @@ public class AdventureGameView {
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
+    Label promptAnswerLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
+    VBox objectsInRoom2 = new VBox(); //to hold room items clone
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
+    ImageView clueImageView; //to hold room image
     TextField inputTextField; //for user input
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
-    private int timerSeconds = 1200;
+    private int timerSeconds = 600;
     Label timerLabel = new Label();
+
+    public crimeMiniGame crimeGame;
+
+    public prisonMiniGame prisonGame;
+
+    public futureMiniGame futureGame;
+    public zombieMiniGame zombieGame;
+    public int currQuestionIndex = 0;
 
     /**
      * Adventure Game View Constructor
@@ -82,9 +83,14 @@ public class AdventureGameView {
     public AdventureGameView(AdventureGame model, Stage stage) {
         this.model = model;
         this.stage = stage;
+
+        crimeGame = new crimeMiniGame(this.model.player);
+        prisonGame = new prisonMiniGame(this.model.player);
+        futureGame = new futureMiniGame(this.model.player);
+        zombieGame = new zombieMiniGame(this.model.player);
+
         intiUI();
     }
-
 
     /**
      * Private instance variable to manage the timer using.
@@ -129,8 +135,8 @@ public class AdventureGameView {
             });
             pause.play();
 
-        }else if (timerSeconds % 300 == 0) { // Check if 5 minutes have passed
-            playAudioTime(5);
+        } else if (timerSeconds % 60 == 0) { // Check if 1 minute have passed
+            playAudioTime(1);
         }
     }
 
@@ -168,6 +174,9 @@ public class AdventureGameView {
         objectsInRoom.setSpacing(10);
         objectsInRoom.setAlignment(Pos.TOP_CENTER);
 
+        objectsInRoom2.setSpacing(10);
+        objectsInRoom2.setAlignment(Pos.TOP_CENTER);
+
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
         gridPane.setBackground(new Background(new BackgroundFill(
@@ -192,7 +201,6 @@ public class AdventureGameView {
 
         gridPane.getColumnConstraints().addAll( column1 , column2 , column1 );
         gridPane.getRowConstraints().addAll( row1 , row2 , row1 );
-
 
 
         // Buttons
@@ -264,9 +272,10 @@ public class AdventureGameView {
         gridPane.add(topButtons, 1, 0, 1, 1 );  // Add buttons
         gridPane.add(invLabel, 2, 0, 1, 1 );  // Add label
 
-        Label commandLabel = new Label("What would you like to do?");
+        Label commandLabel = new Label("What would you like to do? \n Type 'PLAY' to be asked a question, then type 'ANSWER' followed by your response.");
         commandLabel.setStyle("-fx-text-fill: white;");
         commandLabel.setFont(new Font("Arial", 16));
+        commandLabel.setAlignment(Pos.TOP_CENTER);
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
@@ -291,11 +300,10 @@ public class AdventureGameView {
         timerLabel.setStyle("-fx-text-fill: red;");
         timerLabel.setFont(new Font("Arial", 16));
         gridPane.add(timerLabel, 1, 0, 1, 1); // Align to the top
-        GridPane.setMargin(timerLabel, new Insets(-50, 100, 50, 250));
+        GridPane.setMargin(timerLabel, new Insets(-45, 100, 50, 250));
 
         //TODO: Phase 2 Taha Timer User Story
         startTimer();
-
     }
 
 
@@ -429,17 +437,18 @@ public class AdventureGameView {
                 pause2.play();
             });
             pause.play();
-
         }
 
         if(output == null || !output.equals("FORCED")){
             inputTextField.setDisable(false);
         }
 
-        if (output == null || (!output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
+        if (output == null || (!output.equals("PLAY") && !output.equals("ANSWER")& !output.equals("GAME OVER") &&
+                !output.equals("FORCED") && !output.equals("HELP"))) {
             updateScene(output);
             updateItems();
-        } else if (output.equals("GAME OVER")) {
+        }
+        else if (output.equals("GAME OVER")) {
             inputTextField.setDisable(true);
             updateScene("");
             updateItems();
@@ -448,7 +457,9 @@ public class AdventureGameView {
                 Platform.exit();
             });
             pause.play();
-        } else if (output.equals("FORCED")) {
+        }
+
+        else if (output.equals("FORCED")) {
             //user should not be able to enter or type in the text box
             //citation for setDisable: https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#setDisable-boolean-
             inputTextField.setDisable(true);
@@ -466,6 +477,60 @@ public class AdventureGameView {
             });
             pause.play();
         }
+
+        // FAUZAN'S USER STORY [PlayMiniGame(8)]
+        else if (output.equals("PLAY")) {
+            int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
+            if (clue_left == 0) {
+                updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
+            } else {
+                int indexToUse = currQuestionIndex; // Use clue_left instead of 3
+
+                // check if it is within bounds
+                if (indexToUse < this.returnMini().getQuestionList().size()) {
+                    updateScene(this.returnMini().getQuestionList().get(indexToUse).toString());
+
+                    // replace the image of the room with the clue image
+                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + this.returnMini().getClueName(indexToUse) + ".jpg";
+                    Image clueImage = new Image(imagePath);
+                    roomImageView.setImage(clueImage);
+                    roomImageView.setFitHeight(400);
+                    roomImageView.setFitWidth(400);
+                    roomImageView.setPreserveRatio(true);
+                }
+            }
+        }
+
+            // once the user can see the question, the next output will be this
+        else if (output.startsWith("ANSWER")) {
+            output = text.strip().substring(6);
+
+            int indexToUse = currQuestionIndex % 3;
+
+            // If the answer is correct (also Use indexToUse when calling playGame)
+            if (this.returnMini().playGame(this.model.player, output, indexToUse)) {
+                updateScene("Correct Answer! The clue is now added to your inventory");
+                updateItems();
+                currQuestionIndex++; // increment so the same question is not shown
+            } else {
+                updateScene("Incorrect... enter PLAY to answer the next available clue in the room. ");
+            }
+        }
+}
+
+    // return the correct miniGame according to roomNumber
+    public MiniGame returnMini(){
+        if (this.model.player.getCurrentRoom().getRoomNumber() == 1){
+            return crimeGame;
+        }
+        else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
+            return prisonGame;
+        }
+        else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
+            return futureGame;
+        }
+        return zombieGame;
+
     }
 
     /**
@@ -480,7 +545,6 @@ public class AdventureGameView {
         //update the roomDescLabel text
         roomDescLabel.setText("You can move in these directions: \n\n" + model.getPlayer().getCurrentRoom().getCommands());
     }
-
 
     /**
      * updateScene
@@ -531,7 +595,8 @@ public class AdventureGameView {
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (objectString != null && !objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
             else roomDescLabel.setText(roomDesc);
-        } else roomDescLabel.setText(textToDisplay);
+        }
+        else roomDescLabel.setText(textToDisplay);
         roomDescLabel.setStyle("-fx-text-fill: white;");
         roomDescLabel.setFont(new Font("Arial", 16));
         roomDescLabel.setAlignment(Pos.CENTER);
@@ -575,15 +640,6 @@ public class AdventureGameView {
      * folders of the given adventure game.
      */
     public void updateItems() {
-
-
-        //write some code here to add images of objects in a given room to the objectsInRoom Vbox
-        //write some code here to add images of objects in a player's inventory room to the objectsInInventory Vbox
-        //please use setAccessibleText to add "alt" descriptions to your images!
-        //the path to the image of any is as follows:
-        //this.model.getDirectoryName() + "/objectImages/" + objectName + ".jpg";
-        //write some code here to add images of objects in a given room to the objectsInRoom Vbox
-
         boolean flagForced = false;
 
         //check if there is a forced room
@@ -593,11 +649,11 @@ public class AdventureGameView {
             }
         }
 
-
         //clear all objects in room
         objectsInRoom.getChildren().clear();
         //an arraylist to store all the objects in the current room
         ArrayList<AdventureObject> listObjectsInRoom = model.getPlayer().getCurrentRoom().objectsInRoom;
+
 
         //loop through all the objects in the current room
         for(int i = 0; i < listObjectsInRoom.size(); i++){
@@ -631,21 +687,59 @@ public class AdventureGameView {
                 public void handle(KeyEvent e) {
                     //if user enters enter, take the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
-
-                        model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
                         articulateObjName(listObjectsInRoom.get(tempI).getName());
-                        updateItems();
+                        // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
+                        roomImageView.setImage(image);
+                        roomImageView.setFitHeight(400);
+                        roomImageView.setFitWidth(400);
+                        roomImageView.setPreserveRatio(true);
+
+                        // Get the description of the clicked clue (comment this section below if not needed)
+                        String objectDescription = listObjectsInRoom.get(tempI).getDescription();
+
+                        if (objectDescription != null && !objectDescription.isBlank()) {
+                            roomDescLabel.setText(objectDescription);
+                        }
+                        roomDescLabel.setFont(new Font("Arial", 18));
+                        roomDescLabel.setStyle("-fx-text-fill: white;");
+                        roomDescLabel.setWrapText(true);
+
+                        // change the label from 'what would you like to do' to this.
+                        Label commandLabel = new Label("Answer this question...");
+                        commandLabel.setStyle("-fx-text-fill: white;");
+                        commandLabel.setFont(new Font("Arial", 16));
+                        commandLabel.setPrefWidth(500);
+                        commandLabel.setPrefHeight(500);
+                        commandLabel.setTextOverrun(OverrunStyle.CLIP);
+                        commandLabel.setWrapText(true);
+
+                        // now see what user types once image is clicked. Then if correct add to inventory and change label to correct!
+
                     }
                 }
             };
+
+            //FAUZAN'S USER STORY - CLUE(10)
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
-                    //if user left-clicks, take the object and update items
+                    // Fauzan's Clue User Story
                     if(e.getButton() == MouseButton.PRIMARY){
                         articulateObjName(listObjectsInRoom.get(tempI).getName());
-                        model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
-                        updateItems();
+                        // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
+                        roomImageView.setImage(image);
+                        roomImageView.setFitHeight(400);
+                        roomImageView.setFitWidth(400);
+                        roomImageView.setPreserveRatio(true);
+
+                        // Get the description of the clicked clue (comment this section below if not needed)
+                        String objectDescription = listObjectsInRoom.get(tempI).getDescription();
+                        if (objectDescription != null && !objectDescription.isBlank()) {
+                            roomDescLabel.setText(objectDescription);
+                        }
+                        roomDescLabel.setFont(new Font("Arial", 18));
+                        roomDescLabel.setStyle("-fx-text-fill: white;");
+                        roomDescLabel.setWrapText(true);
                     }
                 }
             };
@@ -683,31 +777,33 @@ public class AdventureGameView {
             makeButtonAccessible(button2, listObjectsInInventory.get(i), "This is a button for " + listObjectsInInventory.get(i), "This is a button for this object in the players inventory: " + listObjectsInInventory.get(i));
             customizeButton(button2, 100, 100);
 
-            int tempI = i;
             EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent e) {
                     //if user presses enter, drop the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
-                        model.getPlayer().dropObject(listObjectsInInventory.get(tempI));
+                        updateScene("You are not allowed to drop clues!");
                         updateItems();
                     }
                 }
             };
+
+            // SHOULD NOT OPERATE since user cannot drop a clue
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
                     //if user left-clicks , drop the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
-                        model.getPlayer().dropObject(listObjectsInInventory.get(tempI));
+                        updateScene("You are not allowed to drop clues!");
                         updateItems();
+
                     }
                 }
             };
 
             //register the handlers
             button2.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
-            button2.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
+//            button2.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
             //add the button to the objects in inventory
             objectsInInventory.getChildren().add(button2);
         }
@@ -849,7 +945,6 @@ public class AdventureGameView {
      */
     public void addInstructionEvent() {
         helpButton.setOnAction(e -> {
-            System.out.println("HERE");
             stopArticulation(); //if speaking, stop
             showInstructions();
         });
@@ -865,6 +960,7 @@ public class AdventureGameView {
             gridPane.requestFocus();
             stopArticulation();
             this.model.restart();
+            currQuestionIndex=0;
             updateItems();
             updateScene("");
             updateTimer();
@@ -884,8 +980,6 @@ public class AdventureGameView {
      * hint button.
      */
     private void addHintEvent(Button hintButton) {
-        System.out.println(this.model.getPlayer().getInventory().size());
-        System.out.println(this.model.getTotalClues());
         hintButton.setOnAction(e -> {
             if(this.model.getPlayer().getInventory().size() == this.model.getTotalClues()){
                 stopArticulation(); //if speaking, stop
@@ -950,30 +1044,17 @@ public class AdventureGameView {
      * This method articulates Object Descriptions
      */
     public void articulateObjName(String objName) {
-
+        stopArticulation();
         String musicFile;
         String adventureName = this.model.getDirectoryName();
-
+        stopArticulation();
         musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
 
-        String directoryPath = "./" + adventureName + "/sounds/";
-        String filePath = musicFile;
 
-        Path directory = Paths.get(directoryPath);
-        Path file = Paths.get(filePath);
-
-// Resolve the file path against the directory to get the absolute path
-        Path absoluteFilePath = directory.resolve(file);
-
-        if (Files.exists(absoluteFilePath) && Files.isRegularFile(absoluteFilePath)) {
-            stopArticulation();
-            Media sound = new Media(absoluteFilePath.toUri().toString());
-            mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.play();
-            mediaPlaying = true;
-        } else {
-            System.out.println("File not found or is not a regular file.");
-        }
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+        mediaPlaying = true;
     }
 
     /**
