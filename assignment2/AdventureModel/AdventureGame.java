@@ -165,6 +165,14 @@ public class AdventureGame implements Serializable {
         return !this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDirection().equals("FORCED");
     }
 
+
+    /**
+     * Restarts the game
+     * __________________________
+     *
+     * Places the player in the first room and resets all rooms.
+     *
+     * */
     public void restart() {
         //restart the game by initiating a new player in room 1 and clearing the rooms
         this.player = new Player(this.rooms.get(1));
