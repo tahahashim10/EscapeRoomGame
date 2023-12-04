@@ -1008,9 +1008,12 @@ public class AdventureGameView {
     }
 
     /**
-     * This method handles the event related to the
-     * hint button.
-     */
+     * Handles the event related to the Restart Button
+     * __________________________
+     *
+     * This method stops any ongoing articulation, requests focus from the grid, restarts
+     * the adventure game model and updates the items, the scene and the timer.
+     **/
     public void addRestartEvent() {
         restartButton.setOnAction(e -> {
             gridPane.requestFocus();
@@ -1023,6 +1026,13 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     *  Handles the event related to the Exit Button
+     *  __________________________
+     *
+     * This method stops any ongoing articulation, requests focus from the grid,
+     * and exits the program
+     * */
     public void addExitEvent() {
         exitButton.setOnAction(e -> {
             gridPane.requestFocus();
@@ -1127,9 +1137,14 @@ public class AdventureGameView {
         mediaPlaying = true;
     }
 
-    /**
-     * This method articulates Object Descriptions
-     */
+    /** * Articulates an object description given its name
+     *  __________________________
+     *
+     *  This method stops any ongoing articulation, constructs the file path for the
+     *  audio file based on the adventure name and object name, and plays the audio.
+     *
+     *  @param objName a String representing the name of the Object
+     *  */
     public void articulateObjName(String objName) {
         stopArticulation();
         String musicFile;
