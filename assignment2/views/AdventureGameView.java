@@ -423,6 +423,10 @@ public class AdventureGameView {
         String output = this.model.interpretAction(text); //process the command!
 
         if(Objects.equals(output, "VICTORY")){
+            for(int i = 0; i < this.model.player.inventory.size(); i ++){
+                this.model.player.inventory.remove(i);
+            }
+
             inputTextField.setDisable(true);
             updateItems();
 
