@@ -38,7 +38,7 @@ public class AdventureObject implements Serializable {
      * @param description One line description of the Object.
      * @param location The location of the Object in the game.
      */
-    public AdventureObject(String name, String description, Room location,  String answer){
+    public AdventureObject(String name, String description, Room location, String answer){
         this.objectName = name;
         this.description = description;
         this.location = location;
