@@ -136,11 +136,11 @@ public class LoadView {
         try{
             //If successful, stop any articulation and put the name of the loaded file in the selectGameLabel.
             //load the game
-            AdventureGame loadedGame =  loadGame("Games/Saved/" + selectedGame);
+            //AdventureGame loadedGame =  loadGame("Games/Saved/" + selectedGame);
             //stop any articulation
             adventureGameView.stopArticulation();
             //create a new adventure game object given the loaded game
-            adventureGameView = new AdventureGameView(loadedGame, adventureGameView.stage);
+            adventureGameView = new AdventureGameView(adventureGameView.stage);
             //put the name of the loaded file in the selectGameLabel
             selectGameLabel.setText(selectedGame);
 
@@ -149,38 +149,17 @@ public class LoadView {
             //In this case, change the selectGameLabel to indicate a new game has been loaded.
             //stop any articulation
             adventureGameView.stopArticulation();
-            //create a new adventure game object given the current directory name after "Games"
-            AdventureGame newGame = new AdventureGame(adventureGameView.model.getDirectoryName().substring(5));
+
             //re-initialize the adventureGameView
-            adventureGameView = new AdventureGameView(newGame, adventureGameView.stage);
+            adventureGameView = new AdventureGameView( adventureGameView.stage);
             //indicate a new game has been loaded
             selectGameLabel.setText("New game has been loaded.");
         }
 
     }
 
-    /**
-     * Load the Game from a file
-     *
-     * @param GameFile file to load
-     * @return loaded Tetris Model
-     */
-    public AdventureGame loadGame(String GameFile) throws IOException, ClassNotFoundException {
-        // Reading the object from a file
-        FileInputStream file = null;
-        ObjectInputStream in = null;
-        try {
-            file = new FileInputStream(GameFile);
-            in = new ObjectInputStream(file);
-            return (AdventureGame) in.readObject();
-        } finally {
-            if (in != null) {
-                in.close();
-                file.close();
-            }
-        }
-    }
+
+
 
 }
-
 
