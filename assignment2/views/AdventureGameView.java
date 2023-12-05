@@ -566,6 +566,7 @@ public class AdventureGameView {
             //play the object audio when the Player enter PLAY (Angela)
             articulateObjDescription(returnCurrMiniGame().getClueName(currQuestionIndex));
 
+            // if there are no more clues in the room, it means user has all of them in inventory
             if (clue_left == 0) {
                 updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
             } else {
@@ -573,9 +574,10 @@ public class AdventureGameView {
 
                 // check if it is within bounds
                 if (indexToUse < returnCurrMiniGame().getQuestionList().size()) {
+                    // show user the question on GUI screen
                     updateScene(returnCurrMiniGame().getQuestionList().get(indexToUse).toString());
 
-                    // replace the image of the room with the clue image
+                    // replace the image of the room with the clue image (when question is shown)
                     String imagePath = this.model.getDirectoryName() + "/objectImages/" + returnCurrMiniGame().getClueName(indexToUse) + ".jpg";
                     Image clueImage = new Image(imagePath);
                     roomImageView.setImage(clueImage);
@@ -586,7 +588,7 @@ public class AdventureGameView {
             }
         }
 
-            // once the user can see the question, the next output will be this
+        // once the user can see the question, the next output will be this
         else if (output.startsWith("ANSWER")) {
             output = text.strip().substring(6);
 
