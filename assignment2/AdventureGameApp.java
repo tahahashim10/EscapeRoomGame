@@ -22,10 +22,10 @@ public class AdventureGameApp extends  Application {
     * respect its control flow!  To start the game, we need
     * to call "launch" which will in turn call "start" ...
      */
-    @Override
-    public void start(Stage primaryStage) throws IOException {
-        this.model = new AdventureGame("TinyEscapeRoomGame"); //change the name of the game if you want to try something bigger!
-        this.view = new AdventureGameView(model, primaryStage);
+     // modification of this constructor
+      @Override
+    public void start(Stage primaryStage){
+        this.view = new AdventureGameView(primaryStage);
     }
 
 }
