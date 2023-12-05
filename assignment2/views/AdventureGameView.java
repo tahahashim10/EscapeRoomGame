@@ -83,22 +83,20 @@ public class AdventureGameView {
      * Adventure Game View Constructor
      * __________________________
      * Initializes attributes
-     * @param model: The model of the adventure game.
+     *
      * @param stage: The stage of the adventure game.
      */
-    public AdventureGameView(AdventureGame model, Stage stage) {
-        this.model = model;
-        this.stage = stage;
+    public AdventureGameView(Stage stage) {
 
+        this.model = AdventureGame.getGame();
+        this.stage = stage;
         crimeGame = new crimeMiniGame(this.model.player);
         prisonGame = new prisonMiniGame(this.model.player);
         futureGame = new futureMiniGame(this.model.player);
         zombieGame = new zombieMiniGame(this.model.player);
         startMiniGame();
-
         intiUI();
     }
-
 
 
 
@@ -107,7 +105,7 @@ public class AdventureGameView {
      * - Room 1: Crime Game
      * - Room 2: Prison Game
      * - Room 3: Future Game
-     * - Room 4, other room: Zombie Game
+     * - Room 4/ Other Room: Zombie Game
      *
      * Requires a valid 'model' with a set 'player' and room.
      */
