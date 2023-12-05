@@ -170,12 +170,14 @@ public class AdventureGame implements Serializable {
      * Restarts the game
      * __________________________
      *
-     * Places the player in the first room and resets all rooms.
+     * This method restarts the game by placing the player in the first room
+     * and resetting all rooms.
      *
      * */
     public void restart() {
-        //restart the game by initiating a new player in room 1 and clearing the rooms
+        //restart the game by initiating a new player in room 1
         this.player = new Player(this.rooms.get(1));
+        //clear the rooms
         for (Room room : this.rooms.values()) {
             room.reset();
         }
