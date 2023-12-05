@@ -3,14 +3,21 @@ package AdventureModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The futureMiniGame class represents a mini-game focused on solving crimes.
+ * It implements the MiniGame interface and provides specific functionality for a future-themed game.
+ */
 public class futureMiniGame implements MiniGame {
-    private final ArrayList<String> cluesList;
-    private final ArrayList<AdventureObject> objects;
-    private int currIndex;
-    public ArrayList<String> questionList;
-    ArrayList<String> answerList;
+    private final ArrayList<String> cluesList; // List of clues in the mini-game
+    private final ArrayList<AdventureObject> objects; // // List of AdventureObject objects in the game
+    private int currIndex; // The current index
+    public ArrayList<String> questionList; // List of questions to be presented in the mini-game
+    ArrayList<String> answerList; // List of correct answers corresponding to the questions
 
-
+    /**
+     * Constructor for futureMinigame. Initializes questions, answers, clues, and objects related to the game.
+     * @param player The player participating in the mini-game.
+     */
     public futureMiniGame(Player player) {
         this.questionList = new ArrayList<String>(List.of(
                 "Besides Earth, which is the only world in our solar system known to have liquid lakes and seas on " +
@@ -56,13 +63,16 @@ public class futureMiniGame implements MiniGame {
      */
     @Override
     public boolean playGame(Player player, String answer, int index) {
+        // If user answers the given question correctly
         if (answer.toUpperCase().strip().equals(answerList.get(index).toUpperCase().strip())) {
+            // add the clue to their inventory and remove it from the current room
             player.addToInventory(objects.get(index));
             player.getCurrentRoom().deleteObject(objects.get(index).getName());
-            this.currIndex += 1;
-            return true;
-        } else {
-            return false;
+            this.currIndex += 1; // increment index so it goes to next question
+            return true; // return true as player wins game (gets answer correct)
+        }
+        else {
+            return false; // return false as user got answer wrong
         }
     }
 

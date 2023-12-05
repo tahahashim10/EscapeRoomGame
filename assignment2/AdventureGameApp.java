@@ -11,16 +11,24 @@ public class AdventureGameApp extends  Application {
     AdventureGame model;
     AdventureGameView view;
 
+    /**
+     * The main method that launches the JavaFX application.
+     *
+     * @param args command line arguments passed to the application.
+     *             Not used in this application.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
-    /*
-    * JavaFX is a Framework, and to use it we will have to
-    * respect its control flow!  To start the game, we need
-    * to call "launch" which will in turn call "start" ...
+    /**
+     * Starts the JavaFX application.
+     * This method is called after the JavaFX runtime is initialized.
+     * Initializes the view component of the application.
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     *                     the application scene can be set.
      */
-     // modification of this constructor
       @Override
     public void start(Stage primaryStage){
         this.view = new AdventureGameView(primaryStage);
