@@ -71,6 +71,12 @@ public class AdventureGameView {
 
     public futureMiniGame futureGame;
     public zombieMiniGame zombieGame;
+
+
+
+    // current MiniGame
+    private MiniGame currGame;
+
     public int currQuestionIndex = 0;
 
     // current MiniGame
@@ -454,6 +460,10 @@ public class AdventureGameView {
 
         text = text.strip(); //get rid of white space
         stopArticulation(); //if speaking, stop
+        
+        
+        // starting the game based on the context/ room that the player is in
+        startMiniGame();
 
         // starting the game based on the context/ room that the player is in
         startMiniGame();
@@ -554,7 +564,7 @@ public class AdventureGameView {
             pause.play();
         }
 
-        // FAUZAN'S USER STORY [PlayMiniGame(8)]
+         // FAUZAN'S USER STORY [PlayMiniGame(8)]
         else if (output.equals("PLAY")) {
             int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
 
