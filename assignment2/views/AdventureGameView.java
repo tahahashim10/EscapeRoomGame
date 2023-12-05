@@ -74,9 +74,7 @@ public class AdventureGameView {
 
 
 
-    // current MiniGame
-    private MiniGame currGame;
-
+ 
     public int currQuestionIndex = 0;
 
     // current MiniGame
