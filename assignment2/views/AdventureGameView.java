@@ -79,8 +79,6 @@ public class AdventureGameView {
 
     public int currQuestionIndex = 0;
 
-    // current MiniGame
-    private MiniGame currGame;
 
 
      /**
@@ -569,7 +567,7 @@ public class AdventureGameView {
             int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
 
             //play the object audio when the Player enter PLAY (Angela)
-            articulateObjName(returnCurrMiniGame().getClueName(currQuestionIndex));
+            articulateObjDescription(returnCurrMiniGame().getClueName(currQuestionIndex));
 
             if (clue_left == 0) {
                 updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
@@ -774,7 +772,8 @@ public class AdventureGameView {
                 public void handle(KeyEvent e) {
                     //if user enters enter, take the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
-                        articulateObjName(listObjectsInRoom.get(tempI).getName());
+                        // When the image is clicked, PLAY the description of its corresponding clue.
+                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
                         // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
                         roomImageView.setImage(image);
                         roomImageView.setFitHeight(400);
@@ -812,7 +811,7 @@ public class AdventureGameView {
                 public void handle(MouseEvent e) {
                     // Fauzan's Clue User Story
                     if(e.getButton() == MouseButton.PRIMARY){
-                        articulateObjName(listObjectsInRoom.get(tempI).getName());
+                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
                         // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
                         roomImageView.setImage(image);
                         roomImageView.setFitHeight(400);
@@ -1072,9 +1071,12 @@ public class AdventureGameView {
     public void addRestartEvent() {
         restartButton.setOnAction(e -> {
             gridPane.requestFocus();
+            // if audio is playing, stop
             stopArticulation();
+            // restart the game
             this.model.restart();
             currQuestionIndex=0;
+            // update the UI to the restarted game
             updateItems();
             updateScene("");
             updateTimer();
@@ -1085,13 +1087,13 @@ public class AdventureGameView {
      *  Handles the event related to the Exit Button
      *  __________________________
      *
-     * This method stops any ongoing articulation, requests focus from the grid,
-     * and exits the program
+     * This method stops any ongoing articulation and exits the program
      * */
     public void addExitEvent() {
         exitButton.setOnAction(e -> {
-            gridPane.requestFocus();
+            // if audio is playing, stop
             stopArticulation();
+            // exit the program
             System.exit(0);
         });
     }
@@ -1200,16 +1202,21 @@ public class AdventureGameView {
      *
      *  @param objName a String representing the name of the Object
      *  */
-    public void articulateObjName(String objName) {
-        stopArticulation();
+    public void articulateObjDescription(String objName) {
+
+        stopArticulation(); // if audio is playing, stop
+
         String musicFile;
+
+        //build the filepath for the audio file
         String adventureName = this.model.getDirectoryName();
-        stopArticulation();
         musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
 
-
+        //create the Media object
         Media sound = new Media(new File(musicFile).toURI().toString());
         mediaPlayer = new MediaPlayer(sound);
+
+        //play the description
         mediaPlayer.play();
         mediaPlaying = true;
     }

@@ -124,6 +124,8 @@ public class Room implements Serializable {
     public void addGameObject(AdventureObject object){
         this.objectsInRoom.add(object);
         if (objCounter <3) {
+            // adds the three clues in the rooms, checks that counter is less
+            // than 3 to avoid doubles when resetting the room
             if (!initObjects.contains(object)) {
                 this.initObjects.add(object);
             }
@@ -173,11 +175,12 @@ public class Room implements Serializable {
      *
      * */
     public void reset() {
-        // set the room as not visited and make sure it has all its objects
+        // set the room as not visited
         this.isVisited = false;
+        // clear the objects in the room
         objectsInRoom.clear();
+        // add the initial three clues to the objects
         objectsInRoom.addAll(initObjects);
-        this.objCounter = 0;
     }
 
     /**
