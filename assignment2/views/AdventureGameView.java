@@ -73,6 +73,10 @@ public class AdventureGameView {
     public zombieMiniGame zombieGame;
     public int currQuestionIndex = 0;
 
+    // current MiniGame
+    private MiniGame currGame;
+
+
      /**
      * Adventure Game View Constructor
      * __________________________
