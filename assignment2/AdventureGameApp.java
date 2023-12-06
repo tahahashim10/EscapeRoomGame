@@ -3,8 +3,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import views.AdventureGameView;
 
-import java.io.IOException;
-
 /**
  * Class AdventureGameApp.
  */
@@ -13,19 +11,28 @@ public class AdventureGameApp extends  Application {
     AdventureGame model;
     AdventureGameView view;
 
+    /**
+     * The main method that launches the JavaFX application.
+     *
+     * @param args command line arguments passed to the application.
+     *
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
-    /*
-    * JavaFX is a Framework, and to use it we will have to
-    * respect its control flow!  To start the game, we need
-    * to call "launch" which will in turn call "start" ...
+    /**
+     * Starts the JavaFX application.
+     * This method is called after the JavaFX runtime is initialized.
+     * Initializes the view component of the application.
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     *                     the application scene can be set.
      */
-    @Override
-    public void start(Stage primaryStage) throws IOException {
-        this.model = new AdventureGame("TinyGame"); //change the name of the game if you want to try something bigger!
-        this.view = new AdventureGameView(model, primaryStage);
+      @Override
+    public void start(Stage primaryStage){
+        this.view = new AdventureGameView(primaryStage);
     }
 
 }
+

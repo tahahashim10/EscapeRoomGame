@@ -1,0 +1,20 @@
+To play this game you must move between locations and interact with objects by typing one or two word commands.
+
+To play this game you must collect all the clues in each escape room by playing mini-games.
+
+After you have obtained all the clues, you may guess the password to the escape room to continue to the next room.
+
+To navigate to the mini-games you will need to click on the clue objects placed on the left side of the screen.
+
+There are other action commands in the game. These include:
+
+QUIT: this will quit the game.
+PASSWORD <password>: this will allow you to move to the next escape room if you get the password right. Replace <password> with your guess
+COMMANDS: this will print the moves that are legal in a given room.
+HELP: this will display instructions
+INVENTORY: this will print your current inventory.
+LOOK: this will print the description for the current room.
+VIEW <clue>: this will print the description of a clue in your inventory. Replace <clue> with the name of the clue in your inventory. The clue must be present in your inventory in order to see its description.
+ANSWER <answer>: this will allow you to guess the answer to the next mini-game that you are currently on. Replace <answer> with your guess
+
+The game is over when your player escapes all the rooms, or when the timer runs out.
