@@ -61,20 +61,20 @@ public class Player implements Serializable {
         return false;
     }
 
-
     /**
-     * This method drops an object in the players inventory and adds it to the room.
-     * If the object is not in the inventory, the method does nothing.
+     * Get an object from the player's inventory by its name.
      *
-     * @param s name of the object to drop
+     * @param objectName The name of the object to retrieve.
+     * @return The AdventureObject with the specified name, or null if not found.
      */
-    public void dropObject(String s) {
-        for(int i = 0; i<this.inventory.size();i++){
-            if(this.inventory.get(i).getName().equals(s)) {
-                this.currentRoom.addGameObject(this.inventory.get(i));
-                this.inventory.remove(i);
+    public AdventureObject getObjectByName(String objectName) {
+        for (AdventureObject object : this.inventory) {
+            if (object.getName().equals(objectName)) {
+                return object;
             }
         }
+        // If the object is not found, return null
+        return null;
     }
 
     /**
@@ -117,6 +117,4 @@ public class Player implements Serializable {
         }
         return objects;
     }
-
-
 }

@@ -37,7 +37,6 @@ public class LoadView {
      * @param adventureGameView: The main AdventureGameView object.
      */
     public LoadView(AdventureGameView adventureGameView){
-        //test comment
         //note that the buttons in this view are not accessible!!
         this.adventureGameView = adventureGameView;
         selectGameLabel = new Label(String.format(""));
@@ -50,7 +49,7 @@ public class LoadView {
 
         VBox dialogVbox = new VBox(20);
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
-        dialogVbox.setStyle("-fx-background-color: #121212;");
+        dialogVbox.setStyle("-fx-background-color: #544072;");
         selectGameLabel.setId("CurrentGame"); // DO NOT MODIFY ID
         GameList.setId("GameList");  // DO NOT MODIFY ID
         GameList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -61,7 +60,10 @@ public class LoadView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+
+        // high contrast color #0A111D with the with white text
+        // when button is hover, the fonts of the button get smaller, creating a UI effect
+        closeWindowButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
@@ -80,9 +82,13 @@ public class LoadView {
 
         // Default styles which can be modified
         GameList.setPrefHeight(100);
+        GameList.setStyle("-fx-text-fill: #CBC3E3");
         selectGameLabel.setStyle("-fx-text-fill: #e8e6e3");
         selectGameLabel.setFont(new Font(16));
-        selectGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+
+        // high contrast color #0A111D with the selectGameLabel color #FFFFFF
+        // when button is hover, the fonts of the button get smaller, creating a UI effect
+        selectGameButton.setStyle("-fx-background-color: #0A111D; -fx-text-fill: white; -fx-font-family: 'Helvetica';");
         selectGameButton.setPrefSize(200, 50);
         selectGameButton.setFont(new Font(16));
         selectGameBox.setAlignment(Pos.CENTER);
@@ -123,6 +129,7 @@ public class LoadView {
      *
      * @param selectGameLabel the label to use to print errors and or successes to the user.
      * @param GameList the ListView to populate
+     * @throws IOException if there's an issue selecting the game
      */
     private void selectGame(Label selectGameLabel, ListView<String> GameList) throws IOException {
         //saved games will be in the Games/Saved folder!
@@ -130,11 +137,11 @@ public class LoadView {
         try{
             //If successful, stop any articulation and put the name of the loaded file in the selectGameLabel.
             //load the game
-            AdventureGame loadedGame =  loadGame("Games/Saved/" + selectedGame);
+            //AdventureGame loadedGame =  loadGame("Games/Saved/" + selectedGame);
             //stop any articulation
             adventureGameView.stopArticulation();
             //create a new adventure game object given the loaded game
-            adventureGameView = new AdventureGameView(loadedGame, adventureGameView.stage);
+            adventureGameView = new AdventureGameView(adventureGameView.stage);
             //put the name of the loaded file in the selectGameLabel
             selectGameLabel.setText(selectedGame);
 
@@ -143,36 +150,16 @@ public class LoadView {
             //In this case, change the selectGameLabel to indicate a new game has been loaded.
             //stop any articulation
             adventureGameView.stopArticulation();
-            //create a new adventure game object given the current directory name after "Games"
-            AdventureGame newGame = new AdventureGame(adventureGameView.model.getDirectoryName().substring(5));
+
             //re-initialize the adventureGameView
-            adventureGameView = new AdventureGameView(newGame, adventureGameView.stage);
+            adventureGameView = new AdventureGameView( adventureGameView.stage);
             //indicate a new game has been loaded
             selectGameLabel.setText("New game has been loaded.");
         }
 
     }
 
-    /**
-     * Load the Game from a file
-     *
-     * @param GameFile file to load
-     * @return loaded Tetris Model
-     */
-    public AdventureGame loadGame(String GameFile) throws IOException, ClassNotFoundException {
-        // Reading the object from a file
-        FileInputStream file = null;
-        ObjectInputStream in = null;
-        try {
-            file = new FileInputStream(GameFile);
-            in = new ObjectInputStream(file);
-            return (AdventureGame) in.readObject();
-        } finally {
-            if (in != null) {
-                in.close();
-                file.close();
-            }
-        }
-    }
-
 }
+
+
+

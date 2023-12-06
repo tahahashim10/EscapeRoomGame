@@ -11,6 +11,7 @@ public class AdventureLoader {
 
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
+    private int clueNumbers = 3; //the number of clues per room
 
     /**
      * Adventure Loader Constructor
@@ -25,17 +26,21 @@ public class AdventureLoader {
     }
 
      /**
-     * Load game from directory
+      * Load game from directory
+      * @throws IOException if there's an issue loading the game
      */
     public void loadGame() throws IOException {
         parseRooms();
         parseObjects();
         parseSynonyms();
         this.game.setHelpText(parseOtherFile("help"));
+        this.game.setHintText(parseOtherFile("hint"));
+        this.game.setTotalClues(clueNumbers);
     }
 
      /**
-     * Parse Rooms File
+      * Parse Rooms File
+      * @throws IOException if there's an issue reading or parsing the rooms file
      */
     private void parseRooms() throws IOException {
 
@@ -61,9 +66,10 @@ public class AdventureLoader {
                 line = buff.readLine();
             }
             roomDescription += "\n";
+            String roomPass = buff.readLine();
 
             // now we make the room object
-            Room room = new Room(roomName, roomNumber, roomDescription, adventureName);
+            Room room = new Room(roomName, roomNumber, roomDescription, adventureName, roomPass);
 
             // now we make the motion table
             line = buff.readLine(); // reads the line after "-----"
@@ -88,61 +94,95 @@ public class AdventureLoader {
 
     }
 
-     /**
+    /**
      * Parse Objects File
+     *
+     * @throws IOException if there's an issue reading or parsing the objects file
      */
     public void parseObjects() throws IOException {
 
+        // Construct the file path for objects.txt based on the adventure name
         String objectFileName = this.adventureName + "/objects.txt";
+
+        // Create a BufferedReader to read from the objects.txt file
         BufferedReader buff = new BufferedReader(new FileReader(objectFileName));
 
+        // Read and process each set of object information from the file
         while (buff.ready()) {
+            // Read object details: name, description, answer, location, and separator
             String objectName = buff.readLine();
             String objectDescription = buff.readLine();
+            String objectAnswer = buff.readLine();
             String objectLocation = buff.readLine();
             String separator = buff.readLine();
+
+            // Check for formatting errors in the file
             if (separator != null && !separator.isEmpty())
                 System.out.println("Formatting Error!");
+
+            // Convert the object's location to an integer and retrieve the corresponding room
             int i = Integer.parseInt(objectLocation);
             Room location = this.game.getRooms().get(i);
-            AdventureObject object = new AdventureObject(objectName, objectDescription, location);
+
+            // Create an AdventureObject with the parsed information and add it to the room
+            AdventureObject object = new AdventureObject(objectName, objectDescription, location, objectAnswer);
             location.addGameObject(object);
         }
-
-    }
-
-     /**
-     * Parse Synonyms File
-     */
-    public void parseSynonyms() throws IOException {
-        String synonymsFileName = this.adventureName + "/synonyms.txt";
-        BufferedReader buff = new BufferedReader(new FileReader(synonymsFileName));
-        String line = buff.readLine();
-        while(line != null){
-            String[] commandAndSynonym = line.split("=");
-            String command1 = commandAndSynonym[0];
-            String command2 = commandAndSynonym[1];
-            this.game.getSynonyms().put(command1,command2);
-            line = buff.readLine();
-        }
-
     }
 
     /**
-     * Parse Files other than Rooms, Objects and Synonyms
+     * Parse Synonyms File
      *
-     * @param fileName the file to parse
+     * @throws IOException if there's an issue reading or parsing the synonyms file
      */
-    public String parseOtherFile(String fileName) throws IOException {
-        String text = "";
-        fileName = this.adventureName + "/" + fileName + ".txt";
-        BufferedReader buff = new BufferedReader(new FileReader(fileName));
+    public void parseSynonyms() throws IOException {
+        // Construct the file path for synonyms.txt based on the adventure name
+        String synonymsFileName = this.adventureName + "/synonyms.txt";
+
+        // Create a BufferedReader to read from the synonyms.txt file
+        BufferedReader buff = new BufferedReader(new FileReader(synonymsFileName));
+
+        // Read and process each line in the file containing command synonyms
         String line = buff.readLine();
-        while (line != null) { // while not EOF
-            text += line+"\n";
+        while(line != null){
+            // Split the line into command and synonym using "=" as a delimiter
+            String[] commandAndSynonym = line.split("=");
+            String command1 = commandAndSynonym[0];
+            String command2 = commandAndSynonym[1];
+
+            // Add the synonym pair to the game's synonym mapping
+            this.game.getSynonyms().put(command1, command2);
+
+            // Move to the next line in the file
             line = buff.readLine();
         }
+    }
+
+    /**
+     * Parse Files other than Rooms, Objects, and Synonyms
+     *
+     * @param fileName the file to parse
+     * @return the content of the parsed file as a string
+     * @throws IOException if there's an issue reading or parsing the specified file
+     */
+    public String parseOtherFile(String fileName) throws IOException {
+        // Initialize an empty string to store the content of the parsed file
+        String text = "";
+
+        // Construct the file path based on the adventure name and the provided file name
+        fileName = this.adventureName + "/" + fileName + ".txt";
+        // Create a BufferedReader to read from the specified file
+        BufferedReader buff = new BufferedReader(new FileReader(fileName));
+
+        // Read and concatenate each line in the file to the text string
+        String line = buff.readLine();
+        while (line != null) { // while not EOF
+            text += line + "\n";
+            line = buff.readLine();
+        }
+        // Return the concatenated text representing the content of the parsed file
         return text;
     }
+
 
 }

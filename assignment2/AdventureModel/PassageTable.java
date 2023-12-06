@@ -40,14 +40,6 @@ public class PassageTable implements Serializable {
      */
     public List<Passage> getDirection(){ return this.passageTable; }
 
-    /**
-     * Pretty print the table.
-     */
-    public void printTable(){
-        for (Passage m: this.passageTable) {
-            m.printPassage();
-        }
-    }
 
     /**
      * Determine if a given command is an option in the current table

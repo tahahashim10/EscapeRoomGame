@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class contains the information about a 
+ * This class contains the information about a
  * room in the Adventure Game.
  */
 public class Room implements Serializable {
 
+    /**
+     * The adventure name.
+     */
     private final String adventureName;
     /**
      * The number of the room.
@@ -27,6 +30,11 @@ public class Room implements Serializable {
     private String roomDescription;
 
     /**
+     * Object counter to keep track of the first object to add in order to reset
+     * */
+    private int objCounter;
+
+    /**
      * The passage table for the room.
      */
     private PassageTable motionTable = new PassageTable();
@@ -37,9 +45,18 @@ public class Room implements Serializable {
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
 
     /**
+     * The list of the initial objects in the room.
+     */
+    public ArrayList<AdventureObject> initObjects = new ArrayList<AdventureObject>();
+
+    /**
      * A boolean to store if the room has been visited or not
      */
     private boolean isVisited;
+    /**
+     * The number of the room.
+     */
+    private String roomPassword;
 
     /**
      * AdvGameRoom constructor.
@@ -49,12 +66,13 @@ public class Room implements Serializable {
      * @param roomDescription: The description of the room.
      * @param adventureName: The name of the adventure game.
      */
-    public Room(String roomName, int roomNumber, String roomDescription, String adventureName){
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, String roomPassword){
         this.roomName = roomName;
         this.roomNumber = roomNumber;
         this.roomDescription = roomDescription;
         this.adventureName = adventureName;
         this.isVisited = false;
+        this.roomPassword = roomPassword;
     }
 
 
@@ -105,6 +123,14 @@ public class Room implements Serializable {
      */
     public void addGameObject(AdventureObject object){
         this.objectsInRoom.add(object);
+        if (objCounter <3) {
+            // adds the three clues in the rooms, checks that counter is less
+            // than 3 to avoid doubles when resetting the room
+            if (!initObjects.contains(object)) {
+                this.initObjects.add(object);
+            }
+        }
+        objCounter++;
     }
 
     /**
@@ -130,13 +156,6 @@ public class Room implements Serializable {
     }
 
     /**
-     * Sets the visit status of the room to true.
-     */
-    public void visit(){
-        isVisited = true;
-    }
-
-    /**
      * Getter for returning an AdventureObject with a given name
      *
      * @param objectName: Object name to find in the room
@@ -147,6 +166,40 @@ public class Room implements Serializable {
             if(this.objectsInRoom.get(i).getName().equals(objectName)) return this.objectsInRoom.get(i);
         }
         return null;
+    }
+    /**
+     * Resets the room
+     * __________________________
+     *
+     * This method clears the objects in the room and sets the visited attribute to false.
+     *
+     */
+    public void reset() {
+        // set the room as not visited
+        this.isVisited = false;
+        // clear the objects in the room
+        objectsInRoom.clear();
+        // add the initial three clues to the objects
+        objectsInRoom.addAll(initObjects);
+    }
+
+    /**
+     * Delete Object
+     * __________________________
+     *
+     * Removes an object from the list of objects in the room based on the object's name.
+     *
+     * @param objectName the name of the object to be deleted.
+     */
+    public void deleteObject(String objectName) {
+        // Iterate through the list of objects in the room
+        for (int i = 0; i < objectsInRoom.size(); i++) {
+            // Check if the current object's name matches the specified objectName
+            if (this.objectsInRoom.get(i).getName().equals(objectName)) {
+                // Remove the matching object from the list
+                this.objectsInRoom.remove(this.objectsInRoom.get(i));
+            }
+        }
     }
 
     /**
@@ -195,6 +248,15 @@ public class Room implements Serializable {
      */
     public PassageTable getMotionTable(){
         return this.motionTable;
+    }
+
+    /**
+     * Getter method for the room password.
+     *
+     * @return room password
+     */
+    public String getRoomPassword(){
+        return this.roomPassword;
     }
 
 
