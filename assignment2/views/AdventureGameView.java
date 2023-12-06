@@ -1,13 +1,8 @@
 package views;
 
-import AdventureModel.AdventureGame;
-import AdventureModel.AdventureObject;
-import AdventureModel.Passage;
-import AdventureModel.PassageTable;
+import AdventureModel.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -34,57 +29,107 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-//TODO: Taha Phase 2 Timer User Story
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
 /**
  * Class AdventureGameView.
  *
- * This is the Class that will visualize your model.
- * You are asked to demo your visualization via a Zoom
- * recording. Place a link to your recording below.
+ * This is the Class that will visualize the model.
  *
- * ZOOM LINK: https://drive.google.com/file/d/1BUlyAP659uqM48ZI7W0L4_MaM5SMfY4M/view?usp=sharing
+ * DEMO LINK: https://drive.google.com/file/d/1tOTcNVIE64tHyf8PMrol9KLD1u4F0jur/view?usp=sharing
  * PASSWORD: N/A
  */
 public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
-    Button saveButton, loadButton, helpButton, restartButton; //buttons
+    Button saveButton, loadButton, helpButton, restartButton, hintButton, exitButton; //buttons
     Boolean helpToggle = false; //is help on display?
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
+    Label promptAnswerLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
+    VBox objectsInRoom2 = new VBox(); //to hold room items clone
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
+    ImageView clueImageView; //to hold room image
     TextField inputTextField; //for user input
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
-    private int timerSeconds = 1200;
+    private int timerSeconds = 600; //to hold the total time to escape all the rooms
+    Label timerLabel = new Label(); //to hold the timer label
+    public crimeMiniGame crimeGame; // Instance of the crime mini-game
+    public prisonMiniGame prisonGame; // Instance of the prison mini-game
+    public futureMiniGame futureGame; // Instance of the future mini-game
+    public zombieMiniGame zombieGame; // Instance of the zombie mini-game
+    private MiniGame currGame; // Instance of the current mini-game
+    public int currQuestionIndex = 0; //to hold the current index of the question that the player is on
 
-    Label timerLabel = new Label();
 
-
-    /**
+     /**
      * Adventure Game View Constructor
      * __________________________
      * Initializes attributes
-     * @param model: The model of the adventure game.
+     *
      * @param stage: The stage of the adventure game.
      */
-    public AdventureGameView(AdventureGame model, Stage stage) {
-        this.model = model;
+    public AdventureGameView(Stage stage) {
+
+        this.model = AdventureGame.getGame();
         this.stage = stage;
+        crimeGame = new crimeMiniGame(this.model.player);
+        prisonGame = new prisonMiniGame(this.model.player);
+        futureGame = new futureMiniGame(this.model.player);
+        zombieGame = new zombieMiniGame(this.model.player);
+        startMiniGame();
         intiUI();
     }
 
     /**
-     * Private instance variable to manage the timer using.
+     * Sets 'currGame' based on the player's current room number:
+     * - Room 1: Crime Game
+     * - Room 2: Prison Game
+     * - Room 3: Future Game
+     * - Room 4/ Other Room: Zombie Game
+     *
+     * Requires a valid 'model' with a set 'player' and room.
+     */
+    public void setMiniGame() {
+        if (this.model.player.getCurrentRoom().getRoomNumber() == 1) {
+            this.currGame = crimeGame;
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 2) {
+            this.currGame = prisonGame;
+        } else if (this.model.player.getCurrentRoom().getRoomNumber() == 3) {
+            this.currGame = futureGame;
+        } else {
+            this.currGame = zombieGame;
+        }
+    }
+
+    /**
+     * Initiates a mini-game by setting the 'currGame' property based on the player's
+     * current room number. Ensure the 'model' property is initialized with a valid
+     * game model, and the 'player' property has a valid current room set.
+     */
+    public void startMiniGame(){
+        setMiniGame();
+
+    }
+
+    /**
+     * Returns the current MiniGame associated with the current game view
+     * 
+     * @return The current MiniGame instance.
+     */
+    public MiniGame returnCurrMiniGame(){
+        return this.currGame;
+    }
+
+    /**
+     * Private instance variable to manage the timer.
      *
      * The timer updates every second.
      */
@@ -100,17 +145,25 @@ public class AdventureGameView {
     /**
      * Updates the timer.
      *
-     * Calls announceRemainingTime function when 5 minutes pass to play audio of the time remaining.
+     * Every minute it calls the playAudioTime function to play the audio that a minute has passed
      */
-    private void updateTimer(){
+    private void updateTimer() {
+        // Calculate minutes and seconds from the total timer seconds
         int minutes = timerSeconds / 60;
         int seconds = timerSeconds % 60;
+
+        // Update the timer label with the formatted time remaining
         timerLabel.setText("Time Remaining: " + String.format("%02d:%02d", minutes, seconds));
 
+        // Decrease the timer seconds
         timerSeconds--;
 
+        // Check if the timer has reached zero
         if (timerSeconds < 0) {
+            stopArticulation();
             timer.stop();
+
+            // Display "Game Over" label with special styling
             Label gameOverLabel = new Label("Game Over");
             VBox vBox = new VBox();
             vBox.setSpacing(10);
@@ -119,14 +172,16 @@ public class AdventureGameView {
             vBox.getChildren().add(gameOverLabel);
             gridPane.add(vBox, 1, 1, 1, 1);
             gameOverLabel.setStyle("-fx-text-fill: red; -fx-font-size: 115; -fx-rotate: 15;");
+
+            // Set up a pause transition to exit the application after 10 seconds
             PauseTransition pause = new PauseTransition(Duration.seconds(10));
             pause.setOnFinished(event -> {
                 Platform.exit();
             });
             pause.play();
-
-        }else if (timerSeconds % 300 == 0) { // Check if 5 minutes have passed
-            playAudioTime(5);
+        } else if (timerSeconds % 60 == 0) {
+            // Check if 1 minute has passed and play audio
+            playAudioTime(1);
         }
     }
 
@@ -136,14 +191,22 @@ public class AdventureGameView {
      * @param minutes: The remaining minutes in the timer.
      */
     private void playAudioTime(int minutes) {
+        // Construct the file path for the audio file based on remaining minutes
         String audiofile = "./" + this.model.getDirectoryName() + "/sounds/" + minutes + "audiotime.mp3";
+
+        // Create a Media object from the audio file
         Media sound = new Media(new File(audiofile).toURI().toString());
+
+        // Create a MediaPlayer and play the audio
         MediaPlayer audioPlayer = new MediaPlayer(sound);
         audioPlayer.play();
     }
 
-    //TODO: Phase 2 Taha Timer User Story
+    /**
+     * Configures and starts the game timer.
+     */
     private void startTimer() {
+        // Set the cycle count of the timer to INDEFINITE and start the timer
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
     }
@@ -154,13 +217,16 @@ public class AdventureGameView {
     public void intiUI() {
 
         // setting up the stage
-        this.stage.setTitle("hashimt1's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
+        this.stage.setTitle("Escape Room Game");
 
         //Inventory + Room items
         objectsInInventory.setSpacing(10);
         objectsInInventory.setAlignment(Pos.TOP_CENTER);
         objectsInRoom.setSpacing(10);
         objectsInRoom.setAlignment(Pos.TOP_CENTER);
+
+        objectsInRoom2.setSpacing(10);
+        objectsInRoom2.setAlignment(Pos.TOP_CENTER);
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
@@ -187,7 +253,9 @@ public class AdventureGameView {
         gridPane.getColumnConstraints().addAll( column1 , column2 , column1 );
         gridPane.getRowConstraints().addAll( row1 , row2 , row1 );
 
+
         // Buttons
+        // Configuring buttons with their styles and accessibility information
         saveButton = new Button("Save");
         saveButton.setId("Save");
         customizeButton(saveButton, 100, 50);
@@ -212,13 +280,26 @@ public class AdventureGameView {
         makeButtonAccessible(restartButton, "Restart Button", "This button restarts the game", "This button restarts the game. Click it to start the game from zero");
         addRestartEvent();
 
+        hintButton = new Button("Hint");
+        hintButton.setId("Hint");
+        customizeButton(hintButton, 100, 50);
+        makeButtonAccessible(hintButton, "Hint Button", "Get a hint for the game.", "Click to get a hint for the game.");
+        addHintEvent(hintButton);
 
+        exitButton = new Button("Exit");
+        exitButton.setId("Exit");
+        customizeButton(exitButton, 100, 50);
+        makeButtonAccessible(exitButton, "Exit Button", "Exit the game", "Click to exit the game.");
+        addExitEvent();
 
+        // Creating an HBox to hold the top buttons
         HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton);
+        topButtons.getChildren().addAll(saveButton, helpButton, loadButton, restartButton, hintButton, exitButton);
         topButtons.setSpacing(10);
         topButtons.setAlignment(Pos.CENTER);
 
+
+        // Configuring and adding inputTextField
         inputTextField = new TextField();
         inputTextField.setFont(new Font("Arial", 16));
         inputTextField.setFocusTraversable(true);
@@ -241,13 +322,14 @@ public class AdventureGameView {
         invLabel.setFont(new Font("Arial", 16));
 
         //add all the widgets to the GridPane
-        gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
-        gridPane.add( topButtons, 1, 0, 1, 1 );  // Add buttons
-        gridPane.add( invLabel, 2, 0, 1, 1 );  // Add label
+        gridPane.add(objLabel, 0, 0, 1, 1 );  // Add label
+        gridPane.add(topButtons, 1, 0, 1, 1 );  // Add buttons
+        gridPane.add(invLabel, 2, 0, 1, 1 );  // Add label
 
-        Label commandLabel = new Label("What would you like to do?");
+        Label commandLabel = new Label("What would you like to do? \n Type 'PLAY' to be asked a question, then type 'ANSWER' followed by your response.");
         commandLabel.setStyle("-fx-text-fill: white;");
         commandLabel.setFont(new Font("Arial", 16));
+        commandLabel.setAlignment(Pos.TOP_CENTER);
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
@@ -261,28 +343,23 @@ public class AdventureGameView {
         textEntry.setAlignment(Pos.CENTER);
         gridPane.add( textEntry, 0, 2, 3, 1 );
 
-        //TODO: Phase 2 Taha Timer User Story
-        VBox vBox = new VBox();
-        vBox.setSpacing(10);
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.setPadding(new Insets(-20, 0, 0, 0));
-        vBox.getChildren().add(timerLabel);
-        gridPane.add(vBox, 1, 0, 1, 1);
-        timerLabel.setStyle("-fx-text-fill: red;");
-        timerLabel.setFont(new Font("Arial", 16));
-
         // Render everything
-        var scene = new Scene( gridPane ,  1000, 800);
+        var scene = new Scene( gridPane , 1000, 800);
         scene.setFill(Color.BLACK);
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
 
-        //TODO: Phase 2 Taha Timer User Story
+        // Styling and positioning the timer label
+        timerLabel.setStyle("-fx-text-fill: red;");
+        timerLabel.setFont(new Font("Arial", 16));
+        gridPane.add(timerLabel, 1, 0, 1, 1); // Align to the top
+        GridPane.setMargin(timerLabel, new Insets(-45, 100, 50, 250));
+
+        // Starting the game timer
         startTimer();
 
     }
-
 
     /**
      * makeButtonAccessible
@@ -352,7 +429,6 @@ public class AdventureGameView {
         inputTextField.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
     }
 
-
     /**
      * submitEvent
      * __________________________
@@ -360,15 +436,19 @@ public class AdventureGameView {
      * @param text the command that needs to be processed
      */
     private void submitEvent(String text) {
-
         text = text.strip(); //get rid of white space
         stopArticulation(); //if speaking, stop
+
+        // starting the game based on the context/ room that the player is in
+        startMiniGame();
+
+        // starting the game based on the context/ room that the player is in
+        startMiniGame();
 
         if (text.equalsIgnoreCase("LOOK") || text.equalsIgnoreCase("L")) {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-            // articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
             return;
         } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
@@ -381,14 +461,56 @@ public class AdventureGameView {
 
         //try to move!
         String output = this.model.interpretAction(text); //process the command!
+
+        if(Objects.equals(output, "VICTORY")){
+            for(int i = 0; i < this.model.player.inventory.size(); i ++){
+                this.model.player.inventory.remove(i);
+            }
+
+            inputTextField.setDisable(true);
+            updateItems();
+
+            getRoomImage(); //get the image of the current room
+            formatText(this.model.getPlayer().getCurrentRoom().getRoomDescription()); //format the text to display
+            roomDescLabel.setPrefWidth(500);
+            roomDescLabel.setPrefHeight(500);
+            roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
+            roomDescLabel.setWrapText(true);
+            VBox roomPane = new VBox(roomImageView,roomDescLabel);
+            roomPane.setPadding(new Insets(10));
+            roomPane.setAlignment(Pos.TOP_CENTER);
+            roomPane.setStyle("-fx-background-color: #000000;");
+            gridPane.add(roomPane, 1, 1);
+            stage.sizeToScene();
+
+            articulateVictory("victory");
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+
+                articulateVictory("final");
+                // Update the room description again
+                formatText(this.model.getPlayer().getCurrentRoom().getRoomDescription());
+
+                // Create another pause for the final audio to finish before exiting
+                PauseTransition pause2 = new PauseTransition(Duration.seconds(12));
+                pause2.setOnFinished(exitEvent -> {
+                    Platform.exit();
+                });
+                pause2.play();
+            });
+            pause.play();
+        }
+
         if(output == null || !output.equals("FORCED")){
             inputTextField.setDisable(false);
         }
 
-        if (output == null || (!output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
+        if (output == null || (!output.equals("PLAY") && !output.equals("ANSWER")& !output.equals("GAME OVER") &&
+                !output.equals("FORCED") && !output.equals("HELP"))) {
             updateScene(output);
             updateItems();
-        } else if (output.equals("GAME OVER")) {
+        }
+        else if (output.equals("GAME OVER")) {
             inputTextField.setDisable(true);
             updateScene("");
             updateItems();
@@ -397,7 +519,9 @@ public class AdventureGameView {
                 Platform.exit();
             });
             pause.play();
-        } else if (output.equals("FORCED")) {
+        }
+
+        else if (output.equals("FORCED")) {
             //user should not be able to enter or type in the text box
             //citation for setDisable: https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#setDisable-boolean-
             inputTextField.setDisable(true);
@@ -415,6 +539,51 @@ public class AdventureGameView {
             });
             pause.play();
         }
+
+         // FAUZAN'S USER STORY [PlayMiniGame(8)]
+        else if (output.equals("PLAY")) {
+            int clue_left = this.model.player.getCurrentRoom().objectsInRoom.size();
+
+            //play the object audio when the Player enter PLAY (Angela)
+            articulateObjDescription(returnCurrMiniGame().getClueName(currQuestionIndex));
+
+            // if there are no more clues in the room, it means user has all of them in inventory
+            if (clue_left == 0) {
+                updateScene("You have attempted all the clues in the room...\n\nPlease guess the room password to move to the next room.");
+            } else {
+                int indexToUse = currQuestionIndex; // Use clue_left instead of 3
+
+                // check if it is within bounds
+                if (indexToUse < returnCurrMiniGame().getQuestionList().size()) {
+                    // show user the question on GUI screen
+                    updateScene(returnCurrMiniGame().getQuestionList().get(indexToUse).toString());
+
+                    // replace the image of the room with the clue image (when question is shown)
+                    String imagePath = this.model.getDirectoryName() + "/objectImages/" + returnCurrMiniGame().getClueName(indexToUse) + ".jpg";
+                    Image clueImage = new Image(imagePath);
+                    roomImageView.setImage(clueImage);
+                    roomImageView.setFitHeight(400);
+                    roomImageView.setFitWidth(400);
+                    roomImageView.setPreserveRatio(true);
+                }
+            }
+        }
+
+        // once the user can see the question, the next output will be this
+        else if (output.startsWith("ANSWER")) {
+            output = text.strip().substring(6);
+
+            int indexToUse = currQuestionIndex % 3;
+
+            // If the answer is correct (also Use indexToUse when calling playGame)
+            if (returnCurrMiniGame().playGame(this.model.player, output, indexToUse)) {
+                updateScene("Correct Answer! The clue is now added to your inventory");
+                updateItems();
+                currQuestionIndex++; // increment so the same question is not shown
+            } else {
+                updateScene("Incorrect... enter PLAY to answer the next available clue in the room. ");
+            }
+        }
     }
 
     /**
@@ -429,7 +598,6 @@ public class AdventureGameView {
         //update the roomDescLabel text
         roomDescLabel.setText("You can move in these directions: \n\n" + model.getPlayer().getCurrentRoom().getCommands());
     }
-
 
     /**
      * updateScene
@@ -460,14 +628,11 @@ public class AdventureGameView {
         stage.sizeToScene();
 
         //finally, articulate the description
-
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
-
-
     }
 
     /**
-     * formatText
+     * Format Text
      * __________________________
      *
      * Format text for display.
@@ -475,12 +640,23 @@ public class AdventureGameView {
      * @param textToDisplay the text to be formatted for display.
      */
     private void formatText(String textToDisplay) {
+        // Check if the text to display is null or empty
         if (textToDisplay == null || textToDisplay.isBlank()) {
+            // If empty, construct a formatted string using room description and objects in the room
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription() + "\n";
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
-            if (objectString != null && !objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-            else roomDescLabel.setText(roomDesc);
-        } else roomDescLabel.setText(textToDisplay);
+
+            // Update roomDescLabel with formatted text including room description and objects
+            if (objectString != null && !objectString.isEmpty())
+                roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
+            else
+                roomDescLabel.setText(roomDesc);
+        } else {
+            // If text to display is not empty, directly set it to roomDescLabel
+            roomDescLabel.setText(textToDisplay);
+        }
+
+        // Style the roomDescLabel for consistent appearance
         roomDescLabel.setStyle("-fx-text-fill: white;");
         roomDescLabel.setFont(new Font("Arial", 16));
         roomDescLabel.setAlignment(Pos.CENTER);
@@ -525,27 +701,12 @@ public class AdventureGameView {
      */
     public void updateItems() {
 
-
-        //write some code here to add images of objects in a given room to the objectsInRoom Vbox
-        //write some code here to add images of objects in a player's inventory room to the objectsInInventory Vbox
-        //please use setAccessibleText to add "alt" descriptions to your images!
-        //the path to the image of any is as follows:
-        //this.model.getDirectoryName() + "/objectImages/" + objectName + ".jpg";
-        //write some code here to add images of objects in a given room to the objectsInRoom Vbox
-
-        boolean flagForced = false;
-
-        //check if there is a forced room
-        for(int i = 0; i < model.getPlayer().getCurrentRoom().getMotionTable().getDirection().size(); i++){
-            if(model.getPlayer().getCurrentRoom().getMotionTable().getDirection().get(i).getDirection().equals("FORCED")){
-                flagForced = true;
-            }
-        }
-
         //clear all objects in room
         objectsInRoom.getChildren().clear();
         //an arraylist to store all the objects in the current room
         ArrayList<AdventureObject> listObjectsInRoom = model.getPlayer().getCurrentRoom().objectsInRoom;
+
+
         //loop through all the objects in the current room
         for(int i = 0; i < listObjectsInRoom.size(); i++){
             //citation for ImageView : https://docs.oracle.com/javase/8/javafx/api/javafx/scene/image/ImageView.html
@@ -578,18 +739,60 @@ public class AdventureGameView {
                 public void handle(KeyEvent e) {
                     //if user enters enter, take the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
-                        model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
-                        updateItems();
+                        // When the image is clicked, PLAY the description of its corresponding clue.
+                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
+                        // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
+                        roomImageView.setImage(image);
+                        roomImageView.setFitHeight(400);
+                        roomImageView.setFitWidth(400);
+                        roomImageView.setPreserveRatio(true);
+
+                        // Get the description of the clicked clue (comment this section below if not needed)
+                        String objectDescription = listObjectsInRoom.get(tempI).getDescription();
+
+                        if (objectDescription != null && !objectDescription.isBlank()) {
+                            roomDescLabel.setText(objectDescription);
+                        }
+                        roomDescLabel.setFont(new Font("Arial", 18));
+                        roomDescLabel.setStyle("-fx-text-fill: white;");
+                        roomDescLabel.setWrapText(true);
+
+                        // change the label from 'what would you like to do' to this.
+                        Label commandLabel = new Label("Answer this question...");
+                        commandLabel.setStyle("-fx-text-fill: white;");
+                        commandLabel.setFont(new Font("Arial", 16));
+                        commandLabel.setPrefWidth(500);
+                        commandLabel.setPrefHeight(500);
+                        commandLabel.setTextOverrun(OverrunStyle.CLIP);
+                        commandLabel.setWrapText(true);
+
+                        // now see what user types once image is clicked. Then if correct add to inventory and change label to correct!
+
                     }
                 }
             };
+
+            //FAUZAN'S USER STORY - CLUE(10)
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
-                    //if user left-clicks, take the object and update items
+                    // Fauzan's Clue User Story
                     if(e.getButton() == MouseButton.PRIMARY){
-                        model.getPlayer().takeObject(listObjectsInRoom.get(tempI).getName());
-                        updateItems();
+                        articulateObjDescription(listObjectsInRoom.get(tempI).getName());
+                        // When image is clicked, REPLACE the room image so it is displayed in the middle for user.
+                        roomImageView.setImage(image);
+                        roomImageView.setFitHeight(400);
+                        roomImageView.setFitWidth(400);
+                        roomImageView.setPreserveRatio(true);
+
+                        // Get the description of the clicked clue (comment this section below if not needed)
+                        String objectDescription = listObjectsInRoom.get(tempI).getDescription();
+                        if (objectDescription != null && !objectDescription.isBlank()) {
+                            roomDescLabel.setText(objectDescription);
+                        }
+                        roomDescLabel.setFont(new Font("Arial", 18));
+                        roomDescLabel.setStyle("-fx-text-fill: white;");
+                        roomDescLabel.setWrapText(true);
                     }
                 }
             };
@@ -598,9 +801,6 @@ public class AdventureGameView {
             button.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
             button.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
             //add the button to the objects in room
-            if(flagForced){
-                button.setDisable(true);
-            }
             objectsInRoom.getChildren().add(button);
 
         }
@@ -630,35 +830,32 @@ public class AdventureGameView {
             makeButtonAccessible(button2, listObjectsInInventory.get(i), "This is a button for " + listObjectsInInventory.get(i), "This is a button for this object in the players inventory: " + listObjectsInInventory.get(i));
             customizeButton(button2, 100, 100);
 
-            int tempI = i;
             EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent e) {
                     //if user presses enter, drop the object and update items
                     if (e.getCode() == KeyCode.ENTER) {
-                        model.getPlayer().dropObject(listObjectsInInventory.get(tempI));
+                        updateScene("You are not allowed to drop clues!");
                         updateItems();
                     }
                 }
             };
+
+            // SHOULD NOT OPERATE since user cannot drop a clue
             EventHandler<MouseEvent> eventHandler2 = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent e) {
                     //if user left-clicks , drop the object and update items
                     if(e.getButton() == MouseButton.PRIMARY){
-                        model.getPlayer().dropObject(listObjectsInInventory.get(tempI));
+                        updateScene("You are not allowed to drop clues!");
                         updateItems();
+
                     }
                 }
             };
 
             //register the handlers
             button2.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
-            button2.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler2);
-
-            if(flagForced){ //if forced room, disable button
-                button2.setDisable(true);
-            }
             //add the button to the objects in inventory
             objectsInInventory.getChildren().add(button2);
         }
@@ -759,6 +956,74 @@ public class AdventureGameView {
     }
 
     /**
+     * Display Hint
+     * __________________________
+     *
+     * Displays a hint to the user based on certain conditions.
+     * If the player has collected all clues, an alert with the hint is shown.
+     * The voice articulation is stopped when the alert is closed.
+     */
+    private void displayHint() {
+
+        // Check if the player has collected all clues
+        if (this.model.getPlayer().getInventory().size() == this.model.getTotalClues()) {
+            // Initiate voice articulation for the hint
+            articulateHint();
+
+            // Retrieve the hint from your model or any relevant source
+            String hint = model.getHint();
+
+            // Display the hint to the user using an alert
+            Alert hintAlert = new Alert(Alert.AlertType.INFORMATION);
+            hintAlert.setTitle("Hint");
+            hintAlert.setHeaderText(null);
+            hintAlert.setContentText(hint);
+
+            // Set the result converter to stop the voice when the alert is closed
+            hintAlert.setResultConverter(dialogButton -> {
+                stopArticulation(); // Stop voice when the alert is closed
+                return null;
+            });
+
+            // Show the hint alert and wait for user interaction
+            hintAlert.showAndWait();
+        } else {
+            // Display an alert indicating that the player needs all clues first
+            Alert clueAlert = new Alert(Alert.AlertType.WARNING);
+            clueAlert.setTitle("Hint Unavailable");
+            clueAlert.setHeaderText(null);
+            clueAlert.setContentText("You need to collect all clues before you can get a hint.");
+
+            // Show the alert indicating missing clues
+            clueAlert.showAndWait();
+        }
+    }
+
+    /**
+     * Articulate Hint
+     * __________________________
+     *
+     * Initiates voice articulation for the hint by playing an audio file.
+     * The audio file is retrieved from the adventure's sound directory.
+     * The media player is used to play the audio, and the mediaPlaying flag is set to true.
+     */
+    private void articulateHint() {
+
+        // Construct the file path for the hint audio file based on the adventure directory name
+        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + "hint.mp3";
+
+        // Create a Media object from the hint audio file
+        Media sound = new Media(new File(musicFile).toURI().toString());
+
+        // Create a MediaPlayer and play the audio
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+
+        // Set the mediaPlaying flag to true
+        mediaPlaying = true;
+    }
+
+    /**
      * This method handles the event related to the
      * help button.
      */
@@ -767,12 +1032,54 @@ public class AdventureGameView {
             stopArticulation(); //if speaking, stop
             showInstructions();
         });
+
     }
 
+    /**
+     * Handles the event related to the Restart Button
+     * __________________________
+     *
+     * This method stops any ongoing articulation, requests focus from the grid, restarts
+     * the adventure game model and updates the items, the scene and the timer.
+     */
     public void addRestartEvent() {
-        loadButton.setOnAction(e -> {
+        restartButton.setOnAction(e -> {
             gridPane.requestFocus();
+            // if audio is playing, stop
+            stopArticulation();
+            // restart the game
             this.model.restart();
+            currQuestionIndex=0;
+            // update the UI to the restarted game
+            updateItems();
+            updateScene("");
+            updateTimer();
+        });
+    }
+
+    /**
+     *  Handles the event related to the Exit Button
+     *  __________________________
+     *
+     * This method stops any ongoing articulation and exits the program
+     */
+    public void addExitEvent() {
+        exitButton.setOnAction(e -> {
+            // if audio is playing, stop
+            stopArticulation();
+            // exit the program
+            System.exit(0);
+        });
+    }
+
+    /**
+     * This method handles the event related to the
+     * hint button.
+     */
+    private void addHintEvent(Button hintButton) {
+        hintButton.setOnAction(e -> {
+            stopArticulation(); //if speaking, stop
+            displayHint();
         });
     }
 
@@ -798,25 +1105,92 @@ public class AdventureGameView {
         });
     }
 
-
     /**
-     * This method articulates Room Descriptions
+     * Articulate Room Description
+     * __________________________
+     *
+     * Initiates voice articulation for room descriptions based on certain conditions.
+     * If the room has not been visited, a longer audio file is played; otherwise, a shorter one.
+     * The audio file is retrieved from the adventure's sound directory using the room name.
+     * The media player is used to play the audio, and the mediaPlaying flag is set to true.
      */
     public void articulateRoomDescription() {
-        String musicFile;
+
+        // Retrieve necessary information for audio file selection
         String adventureName = this.model.getDirectoryName();
         String roomName = this.model.getPlayer().getCurrentRoom().getRoomName();
 
-        if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
-        else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
-        musicFile = musicFile.replace(" ","-");
+        // Determine the appropriate audio file based on whether the room has been visited
+        String musicFile;
+        if (!this.model.getPlayer().getCurrentRoom().getVisited()) {
+            musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3";
+        } else {
+            musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3";
+        }
 
+        // Replace spaces with hyphens in the file path
+        musicFile = musicFile.replace(" ", "-");
+
+        // Create a Media object from the selected audio file
         Media sound = new Media(new File(musicFile).toURI().toString());
 
+        // Create a MediaPlayer and play the audio
         mediaPlayer = new MediaPlayer(sound);
         mediaPlayer.play();
-        mediaPlaying = true;
 
+        // Set the mediaPlaying flag to true
+        mediaPlaying = true;
+    }
+
+    /**
+     * Articulate Victory
+     * __________________________
+     *
+     * Initiates voice articulation for victory room descriptions.
+     *
+     * @param file the name of the audio file to play for the victory description.
+     */
+    public void articulateVictory(String file) {
+
+        // Construct the file path for the victory audio file based on the adventure directory name and provided file name
+        String musicFile = "./" + this.model.getDirectoryName() + "/sounds/" + file + ".mp3";
+
+        // Create a Media object from the victory audio file
+        Media sound = new Media(new File(musicFile).toURI().toString());
+
+        // Create a MediaPlayer and play the audio
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+
+        // Set the mediaPlaying flag to true
+        mediaPlaying = true;
+    }
+
+    /** Articulates an object description given its name
+     *  __________________________
+     *
+     *  This method stops any ongoing articulation, constructs the file path for the
+     *  audio file based on the adventure name and object name, and plays the audio.
+     *
+     *  @param objName a String representing the name of the Object
+     */
+    public void articulateObjDescription(String objName) {
+
+        stopArticulation(); // if audio is playing, stop
+
+        String musicFile;
+
+        //build the filepath for the audio file
+        String adventureName = this.model.getDirectoryName();
+        musicFile = "./" + adventureName + "/sounds/" + objName + ".mp3";
+
+        //create the Media object
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+
+        //play the description
+        mediaPlayer.play();
+        mediaPlaying = true;
     }
 
     /**
